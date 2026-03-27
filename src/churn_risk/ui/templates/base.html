@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/app.css') }}">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand-block">
+                <p class="eyebrow">Revenue Risk Platform</p>
+                <h1>Command Center</h1>
+                <p class="brand-copy">Production-style churn intelligence with risk analytics, API scoring, monitoring, and BI-ready datasets.</p>
+            </div>
+            <nav class="nav-links">
+                <a href="/" class="nav-link active">Overview</a>
+                <a href="/docs" class="nav-link">API Docs</a>
+                <a href="/health" class="nav-link">Health Check</a>
+            </nav>
+        </aside>
+        <main class="main-panel">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    <script>
+        window.__TREND_POINTS__ = {{ trend_points | tojson }};
+    </script>
+    <script src="{{ url_for('static', path='/js/dashboard.js') }}"></script>
+</body>
+</html>

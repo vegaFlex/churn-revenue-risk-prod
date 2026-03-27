@@ -5,6 +5,10 @@ from functools import lru_cache
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI
+from fastapi.requests import Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from churn_risk.api.schemas import ScoreRequest, ScoreResponse
 from churn_risk.config import settings
@@ -14,6 +18,7 @@ from churn_risk.scoring import (
     load_inference_artifacts,
     predict_churn_probabilities,
 )
+from churn_risk.ui.dashboard_service import build_dashboard_context
 
 
 app = FastAPI(
@@ -23,6 +28,8 @@ app = FastAPI(
         "Production-style scoring API for customer churn probability and revenue-at-risk estimation."
     ),
 )
+templates = Jinja2Templates(directory="src/churn_risk/ui/templates")
+app.mount("/static", StaticFiles(directory="src/churn_risk/ui/static"), name="static")
 
 
 @lru_cache
@@ -59,6 +66,13 @@ def build_request_features(payload: ScoreRequest) -> pd.DataFrame:
 @app.get("/health")
 def healthcheck() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/", response_class=HTMLResponse)
+def dashboard(request: Request):
+    context = build_dashboard_context()
+    context["request"] = request
+    return templates.TemplateResponse(request, "dashboard.html", context)
 
 
 @app.post("/score", response_model=ScoreResponse)

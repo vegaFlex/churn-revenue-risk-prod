@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Latest snapshot</p>
+        <h2>{{ latest_snapshot_date }}</h2>
+    </div>
+    <div class="hero-pill">Realtime API + Batch Risk Intelligence</div>
+</section>
+
+<section class="kpi-grid">
+    {% for kpi in kpis %}
+    <article class="kpi-card">
+        <p class="kpi-label">{{ kpi.label }}</p>
+        <p class="kpi-value">{{ kpi.value }}</p>
+        <p class="kpi-hint">{{ kpi.hint }}</p>
+    </article>
+    {% endfor %}
+</section>
+
+<section class="content-grid">
+    <article class="panel panel-large">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Trend monitor</p>
+                <h3>Revenue risk and churn trajectory</h3>
+            </div>
+            <div class="panel-caption">Synthetic 12-month risk history for analytics and monitoring</div>
+        </div>
+        <div class="trend-chart-shell">
+            <canvas id="trendChart" height="140"></canvas>
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Segment pressure</p>
+                <h3>Current risk mix</h3>
+            </div>
+        </div>
+        <div class="segment-stack">
+            {% for segment in risk_segment_cards %}
+            <div class="segment-card tone-{{ segment.tone }}">
+                <span>{{ segment.label }}</span>
+                <strong>{{ segment.value }}</strong>
+            </div>
+            {% endfor %}
+        </div>
+    </article>
+    <article class="panel panel-table">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Action queue</p>
+                <h3>Top risky customers</h3>
+            </div>
+            <div class="panel-caption">Highest revenue exposure in the latest batch run</div>
+        </div>
+        <div class="table-shell">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Contract</th>
+                        <th>Monthly</th>
+                        <th>Churn</th>
+                        <th>Revenue at Risk</th>
+                        <th>Segment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in top_risky_customers %}
+                    <tr>
+                        <td>{{ row.customerID }}</td>
+                        <td>{{ row.Contract }}</td>
+                        <td>${{ "%.2f"|format(row.MonthlyCharges) }}</td>
+                        <td>{{ "%.1f%%"|format(row.churn_probability * 100) }}</td>
+                        <td>${{ "%.2f"|format(row.revenue_at_risk) }}</td>
+                        <td><span class="badge badge-{{ row.risk_segment }}">{{ row.risk_segment }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>
+{% endblock %}
