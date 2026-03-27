@@ -1,0 +1,15 @@
+# Secrets
+.env
+
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Test and notebook artifacts
+.pytest_cache/
+.ipynb_checkpoints/

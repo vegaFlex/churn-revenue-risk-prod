@@ -1,0 +1,14 @@
+pandas
+numpy
+scikit-learn
+joblib
+fastapi
+uvicorn
+pydantic
+sqlalchemy
+psycopg2-binary
+alembic
+pytest
+python-dotenv
+pyarrow
+requests
