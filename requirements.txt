@@ -12,3 +12,4 @@ pytest
 python-dotenv
 pyarrow
 requests
+httpx
