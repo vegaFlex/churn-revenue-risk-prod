@@ -18,6 +18,10 @@ class Settings:
     parquet_raw_path: str = os.getenv("PARQUET_RAW_PATH", "data/raw/telco_churn.parquet")
     features_path: str = os.getenv("FEATURES_PATH", "data/processed/features.parquet")
     scores_path: str = os.getenv("SCORES_PATH", "data/processed/scores.parquet")
+    customer_snapshots_path: str = os.getenv(
+        "CUSTOMER_SNAPSHOTS_PATH",
+        "data/processed/customer_snapshots.parquet",
+    )
     model_path: str = os.getenv("MODEL_PATH", "artifacts/model.joblib")
     preprocessor_path: str = os.getenv("PREPROCESSOR_PATH", "artifacts/preprocessor.joblib")
     train_metrics_path: str = os.getenv("TRAIN_METRICS_PATH", "reports/train_metrics.json")
