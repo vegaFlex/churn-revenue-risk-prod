@@ -1,40 +1,42 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="hero">
-    <div>
-        <p class="eyebrow">Customer explorer snapshot</p>
-        <h2>{{ latest_snapshot_date }}</h2>
-    </div>
-    <div class="hero-pill">Prioritise outreach by risk, contract, and revenue exposure</div>
-</section>
-
-<section class="filter-bar">
-    <div class="filter-group">
-        <span class="filter-label">Risk Segment</span>
-        <div class="filter-pills">
-            <a href="/customers" class="filter-pill {% if not selected_risk_segment %}active{% endif %}">All</a>
-            {% for segment in available_segments %}
-            <a href="/customers?risk_segment={{ segment }}{% if selected_contract %}&contract={{ selected_contract }}{% endif %}"
-               class="filter-pill {% if selected_risk_segment == segment %}active{% endif %}">
-               {{ segment }}
-            </a>
-            {% endfor %}
+<section class="panel customers-toolbar">
+    <div class="customers-toolbar-top">
+        <div>
+            <p class="eyebrow">Customer explorer snapshot</p>
+            <h2>{{ latest_snapshot_date }}</h2>
         </div>
+        <div class="hero-pill">Prioritise outreach by risk, contract, and revenue exposure</div>
     </div>
-    <div class="filter-group">
-        <span class="filter-label">Contract</span>
-        <div class="filter-pills">
-            <a href="/customers{% if selected_risk_segment %}?risk_segment={{ selected_risk_segment }}{% endif %}"
-               class="filter-pill {% if not selected_contract %}active{% endif %}">
-               All
-            </a>
-            {% for contract in available_contracts %}
-            <a href="/customers?contract={{ contract }}{% if selected_risk_segment %}&risk_segment={{ selected_risk_segment }}{% endif %}"
-               class="filter-pill {% if selected_contract == contract %}active{% endif %}">
-               {{ contract }}
-            </a>
-            {% endfor %}
+
+    <div class="filter-bar filter-bar-panel">
+        <div class="filter-group">
+            <span class="filter-label">Risk Segment</span>
+            <div class="filter-pills">
+                <a href="/customers" class="filter-pill {% if not selected_risk_segment %}active{% endif %}">All</a>
+                {% for segment in available_segments %}
+                <a href="/customers?risk_segment={{ segment }}{% if selected_contract %}&contract={{ selected_contract }}{% endif %}"
+                   class="filter-pill {% if selected_risk_segment == segment %}active{% endif %}">
+                   {{ segment }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Contract</span>
+            <div class="filter-pills">
+                <a href="/customers{% if selected_risk_segment %}?risk_segment={{ selected_risk_segment }}{% endif %}"
+                   class="filter-pill {% if not selected_contract %}active{% endif %}">
+                   All
+                </a>
+                {% for contract in available_contracts %}
+                <a href="/customers?contract={{ contract }}{% if selected_risk_segment %}&risk_segment={{ selected_risk_segment }}{% endif %}"
+                   class="filter-pill {% if selected_contract == contract %}active{% endif %}">
+                   {{ contract }}
+                </a>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </section>

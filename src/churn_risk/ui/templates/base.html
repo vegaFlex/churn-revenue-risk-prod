@@ -46,6 +46,9 @@
             <a href="/upload" class="nav-link {% if request.url.path.startswith('/upload') %}active{% endif %}">Upload</a>
             <a href="/docs/guide/" class="nav-link {% if request.url.path.startswith('/docs/guide') or request.url.path.startswith('/docs/user-guide') or request.url.path.startswith('/docs/manual-testing-guide') or request.url.path.startswith('/docs/buyer-guide') or request.url.path.startswith('/docs/upload-schema-guide') %}active{% endif %}">Guides</a>
             <a href="/docs" class="nav-link">API Docs</a>
+            {% if current_user and current_user.role == 'admin' %}
+            <a href="/admin" class="nav-link {% if request.url.path.startswith('/admin') %}active{% endif %}">Admin</a>
+            {% endif %}
             <a href="/health" class="nav-link">Health</a>
         </nav>
         <main class="main-panel">

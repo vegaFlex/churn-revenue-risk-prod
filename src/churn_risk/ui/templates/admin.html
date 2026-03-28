@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Admin controls</p>
+        <h2>Operational control center</h2>
+    </div>
+    <div class="hero-pill">Restricted internal surface for governance, registry review, and future admin actions</div>
+</section>
+
+<section class="kpi-grid">
+    {% for card in control_cards %}
+    <article class="kpi-card">
+        <p class="kpi-label">{{ card.label }}</p>
+        <p class="kpi-value">{{ card.value }}</p>
+        <p class="kpi-hint">{{ card.hint }}</p>
+    </article>
+    {% endfor %}
+</section>
+
+<section class="content-grid admin-grid">
+    <article class="panel">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Allowed now</p>
+                <h3>Current internal uses</h3>
+            </div>
+            <div class="panel-caption">This page is intentionally private and non-public.</div>
+        </div>
+        <div class="admin-list">
+            {% for item in allowed_actions %}
+            <div class="admin-list-item">{{ item }}</div>
+            {% endfor %}
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Planned next</p>
+                <h3>Future protected actions</h3>
+            </div>
+            <div class="panel-caption">Prepared as the internal surface for the next operational upgrades.</div>
+        </div>
+        <div class="admin-list">
+            {% for item in planned_actions %}
+            <div class="admin-list-item">{{ item }}</div>
+            {% endfor %}
+        </div>
+    </article>
+
+    <article class="panel panel-table">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Registry review</p>
+                <h3>Latest model versions</h3>
+            </div>
+            <div class="panel-caption">Directly loaded from the model_registry table.</div>
+        </div>
+        <div class="table-shell">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Version</th>
+                        <th>Model Type</th>
+                        <th>AUC</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>F1</th>
+                        <th>Registered</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in registry_rows %}
+                    <tr>
+                        <td data-label="Version">{{ row.model_version }}</td>
+                        <td data-label="Model Type">{{ row.model_type }}</td>
+                        <td data-label="AUC">{{ row.auc_display }}</td>
+                        <td data-label="Precision">{{ row.precision_display }}</td>
+                        <td data-label="Recall">{{ row.recall_display }}</td>
+                        <td data-label="F1">{{ row.f1_display }}</td>
+                        <td data-label="Registered">{{ row.registered_at_display }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>
+{% endblock %}

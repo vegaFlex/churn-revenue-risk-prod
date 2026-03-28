@@ -24,6 +24,7 @@ from churn_risk.ui.dashboard_service import build_dashboard_context
 from churn_risk.ui.docs_service import build_doc_page_context, build_docs_hub_context
 from churn_risk.ui.monitoring_service import build_monitoring_context
 from churn_risk.ui.auth_service import build_login_context
+from churn_risk.ui.admin_service import build_admin_context
 from churn_risk.upload_analysis import (
     REQUIRED_UPLOAD_COLUMNS,
     apply_column_mapping,
@@ -204,6 +205,24 @@ async def login(request: Request, username: str = Form(...), password: str = For
 def logout(request: Request):
     request.session.clear()
     return RedirectResponse(url="/login", status_code=303)
+
+
+@app.get("/admin", response_class=HTMLResponse)
+def admin_controls(request: Request):
+    current_user = get_current_user(request)
+    if current_user is None:
+        return RedirectResponse(url="/login", status_code=303)
+    if current_user["role"] != "admin":
+        context = build_login_context(
+            request,
+            error_message="Admin controls are restricted to authorised internal users.",
+        )
+        context = enrich_context(request, context)
+        return templates.TemplateResponse(request, "login.html", context, status_code=403)
+
+    context = build_admin_context()
+    context = enrich_context(request, context)
+    return templates.TemplateResponse(request, "admin.html", context)
 
 
 @app.post("/upload", response_class=HTMLResponse)
