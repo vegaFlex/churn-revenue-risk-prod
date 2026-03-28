@@ -181,12 +181,17 @@ def save_artifacts(trained_pipeline: Pipeline, metrics_summary: dict[str, dict[s
     print(f"Saved metrics report to {metrics_destination}")
 
 
-def main() -> None:
+def train_and_save() -> dict[str, dict[str, float]]:
     df = load_feature_dataset(settings.features_path)
     x, y = build_training_matrices(df)
     x_train, x_test, y_train, y_test = split_dataset(x, y)
     trained_pipeline, metrics_summary = train_models(x_train, x_test, y_train, y_test)
     save_artifacts(trained_pipeline, metrics_summary)
+    return metrics_summary
+
+
+def main() -> None:
+    train_and_save()
 
 
 if __name__ == "__main__":
