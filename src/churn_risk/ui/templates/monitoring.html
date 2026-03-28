@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Monitoring snapshot</p>
+        <h2>{{ latest_snapshot_date }}</h2>
+    </div>
+    <div class="hero-pill">Data Drift + Prediction Drift + Threshold Alerts</div>
+</section>
+
+<section class="kpi-grid">
+    {% for card in summary_cards %}
+    <article class="kpi-card">
+        <p class="kpi-label">{{ card.label }}</p>
+        <p class="kpi-value">{{ card.value }}</p>
+        <p class="kpi-hint">Current monitoring inventory</p>
+    </article>
+    {% endfor %}
+</section>
+
+<section class="content-grid">
+    <article class="panel">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Escalations</p>
+                <h3>Alert queue</h3>
+            </div>
+            <div class="panel-caption">Metrics that crossed their configured thresholds</div>
+        </div>
+        <div class="alert-stack">
+            {% if alert_rows %}
+                {% for row in alert_rows %}
+                <div class="alert-card">
+                    <div class="alert-topline">
+                        <span class="badge badge-high">{{ row.metric_scope }}</span>
+                        <span class="alert-date">{{ row.snapshot_date }}</span>
+                    </div>
+                    <h4>{{ row.metric_name }}</h4>
+                    <p>{{ row.details }}</p>
+                    <div class="alert-values">
+                        <span>Metric: {{ row.metric_value_display }}</span>
+                        <span>Threshold: {{ row.threshold_value_display }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">No active alerts for the latest monitoring snapshot.</div>
+            {% endif %}
+        </div>
+    </article>
+
+    <article class="panel panel-table">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Metric ledger</p>
+                <h3>Latest monitoring metrics</h3>
+            </div>
+            <div class="panel-caption">Directly loaded from the drift_metrics table</div>
+        </div>
+        <div class="table-shell">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Snapshot</th>
+                        <th>Scope</th>
+                        <th>Metric</th>
+                        <th>Value</th>
+                        <th>Threshold</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in metric_rows %}
+                    <tr>
+                        <td>{{ row.snapshot_date }}</td>
+                        <td>{{ row.metric_scope }}</td>
+                        <td>{{ row.metric_name }}</td>
+                        <td>{{ row.metric_value_display }}</td>
+                        <td>{{ row.threshold_value_display }}</td>
+                        <td>
+                            <span class="badge badge-{{ 'high' if row.status == 'alert' else 'low' }}">
+                                {{ row.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>
+{% endblock %}

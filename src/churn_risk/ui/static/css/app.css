@@ -264,6 +264,50 @@ th {
     color: var(--safe);
 }
 
+.alert-stack {
+    display: grid;
+    gap: 14px;
+}
+
+.alert-card {
+    padding: 18px;
+    border-radius: 20px;
+    background: rgba(172, 67, 53, 0.08);
+    border: 1px solid rgba(172, 67, 53, 0.12);
+}
+
+.alert-card h4 {
+    margin: 12px 0 10px;
+    font-size: 1.15rem;
+}
+
+.alert-card p {
+    margin: 0 0 12px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.alert-topline,
+.alert-values {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.alert-date {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.empty-state {
+    padding: 18px;
+    border-radius: 18px;
+    background: rgba(47, 110, 73, 0.08);
+    color: var(--safe);
+}
+
 @media (max-width: 1080px) {
     .app-shell {
         grid-template-columns: 1fr;

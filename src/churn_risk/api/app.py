@@ -19,6 +19,7 @@ from churn_risk.scoring import (
     predict_churn_probabilities,
 )
 from churn_risk.ui.dashboard_service import build_dashboard_context
+from churn_risk.ui.monitoring_service import build_monitoring_context
 
 
 app = FastAPI(
@@ -73,6 +74,13 @@ def dashboard(request: Request):
     context = build_dashboard_context()
     context["request"] = request
     return templates.TemplateResponse(request, "dashboard.html", context)
+
+
+@app.get("/monitoring", response_class=HTMLResponse)
+def monitoring_page(request: Request):
+    context = build_monitoring_context()
+    context["request"] = request
+    return templates.TemplateResponse(request, "monitoring.html", context)
 
 
 @app.post("/score", response_model=ScoreResponse)
