@@ -2,7 +2,7 @@
 
 ## 1. Purpose
 
-This guide provides a practical manual testing checklist for the browser app, API, and compatible dataset upload flow.
+This guide provides a practical manual testing checklist for the browser app, API, auth layer, and schema-mapped dataset upload flow.
 
 ## 2. Environment Preparation
 
@@ -18,16 +18,18 @@ Recommended local command:
 ## 3. Browser Smoke Test
 
 Open and confirm all of the following pages return successfully:
+- `/login`
 - `/`
 - `/monitoring`
 - `/customers`
 - `/upload`
+- `/docs/guide/`
 - `/docs`
 
 Expected result:
 - all pages load without server errors
 - navigation works
-- pages remain English-only
+- translation is browser-controlled and pages remain readable
 
 ## 4. Dashboard Test
 
@@ -73,11 +75,18 @@ Expected result:
 
 Open `/upload`
 
-Test with a compatible file.
+Log in first.
+
+Test with:
+- `viewer_demo` to confirm read-only behaviour
+- an authorised internal role if available to confirm scoring flow
 
 Confirm:
 - file picker is English-only
-- upload succeeds
+- viewer mode shows warnings and disabled actions
+- authorised upload succeeds
+- dataset profile appears
+- mapping form appears
 - KPI summary appears
 - preview rows render
 
@@ -85,6 +94,7 @@ Expected result:
 - no browser crash
 - no Python exception page
 - preview shows `Rows Scored`, `Total Revenue At Risk`, and `High Risk Customers`
+- viewer mode blocks action execution safely
 
 ## 8. API Test
 
@@ -111,6 +121,7 @@ Confirm the main tables contain rows:
 - `customer_snapshots`
 - `drift_metrics`
 - `model_registry`
+- `app_users`
 
 Expected result:
 - no critical table is empty after the full pipeline run
@@ -118,10 +129,15 @@ Expected result:
 ## 10. Regression Checklist
 
 After UI changes, always re-check:
+- login page layout
+- topbar session panel
 - dashboard layout
 - mobile dashboard layout
+- customer explorer filters on desktop
 - monitoring layout
 - upload page language
+- viewer read-only messaging
+- admin route protection
 - screenshot paths in README
 - Swagger docs access
 
@@ -129,8 +145,9 @@ After UI changes, always re-check:
 
 The release is manually acceptable when:
 - browser pages load
+- auth routes behave correctly
 - API scoring works
 - upload preview works
 - monitoring metrics exist
 - UI remains readable on desktop and mobile
-- English-only wording is preserved across the app
+- role restrictions behave as designed

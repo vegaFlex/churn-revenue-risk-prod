@@ -10,7 +10,9 @@ The application combines:
 - segment-based risk review
 - browser dashboard analytics
 - monitoring and alert visibility
-- compatible dataset upload preview
+- schema-mapped dataset upload analysis
+- role-based browser access
+- internal admin controls
 - realtime API testing
 
 This guide explains what each part of the application does and how to use it during risk review.
@@ -37,7 +39,8 @@ Can:
 - open API docs
 
 Cannot:
-- use dataset upload
+- run dataset upload actions
+- open admin controls
 
 ### Analyst
 Operational scoring role.
@@ -52,7 +55,8 @@ Full demo administration role.
 
 Can:
 - access everything available to Analyst
-- use admin-only operational credentials for future control features
+- review internal admin controls
+- prepare future protected operational actions
 
 ## 4. Main Navigation
 
@@ -83,12 +87,22 @@ Use it for:
 - confirming whether the current model behaviour looks stable
 
 ### Upload
-Compatible dataset scoring preview.
+Schema-mapped dataset scoring preview.
 
 Use it for:
 - uploading CSV, Parquet, or Excel files
+- profiling uploaded datasets
 - validating schema compatibility
+- confirming or correcting suggested field mappings
 - generating in-memory churn and revenue-risk previews
+
+### Admin
+Restricted internal operations page.
+
+Use it for:
+- reviewing latest registered model versions
+- reviewing monitoring readiness from an admin surface
+- validating internal governance layout for future protected actions
 
 ### API Docs
 Swagger documentation for the realtime API.
@@ -190,7 +204,7 @@ URL:
 `/upload`
 
 ### Purpose
-Allows users to test compatible customer files without replacing the core production snapshot.
+Allows authorised users to test customer files without replacing the core production snapshot.
 
 ### Supported formats
 - CSV
@@ -199,14 +213,17 @@ Allows users to test compatible customer files without replacing the core produc
 
 ### What happens during upload
 1. The file is read in memory
-2. Required columns are validated
-3. Features are generated
-4. The trained model scores the uploaded rows
-5. KPI summary and top uploaded customers are shown in the browser
+2. The app profiles rows, columns, missingness, and data types
+3. Suggested schema mappings are generated
+4. The user confirms or corrects required business field mappings
+5. Features are generated
+6. The trained model scores the uploaded rows
+7. KPI summary and top uploaded customers are shown in the browser
 
 ### What this page does not do
 - it does not automatically overwrite the main production scoring snapshot
 - it does not yet persist uploaded runs into history tables
+- it does not allow viewer accounts to execute upload actions
 
 ## 9. Realtime API
 
@@ -243,9 +260,11 @@ Use the API layer for:
 
 ### Compatible dataset review flow
 1. Open `Upload`
-2. Select a compatible input file
-3. Run scoring preview
-4. Review KPI summary and top exposed customers
+2. Select an input file
+3. Review the dataset profile
+4. Confirm schema mappings
+5. Run mapped scoring preview
+6. Review KPI summary and top exposed customers
 
 ## 11. Troubleshooting
 
@@ -259,6 +278,7 @@ Check:
 - column spelling
 - numeric charge fields
 - compatible contract and service values
+- whether all required fields were mapped before scoring
 
 ### Monitoring looks empty
 Run the monitoring jobs first:
@@ -268,3 +288,7 @@ Run the monitoring jobs first:
 
 ### Uploaded files score differently from the main dataset
 That can be expected if the uploaded population has a different customer mix from the base telco-compatible dataset.
+
+### The upload page is visible but actions are disabled
+That means the logged-in account is `viewer` role.
+Viewer access is intentionally read-only.

@@ -10,6 +10,8 @@ It turns machine learning output into operational decision support by combining:
 - segment prioritisation
 - drift monitoring
 - browser-based review workflows
+- protected user access
+- schema-mapped dataset upload analysis
 
 ## 2. Ideal Buyer / Team
 
@@ -48,7 +50,9 @@ Provides:
 - executive dashboard
 - customer explorer
 - monitoring center
-- compatible dataset upload preview
+- login and role-aware access
+- schema-mapped dataset upload preview
+- internal admin controls
 
 ## 4. Why This Is More Than a Demo
 
@@ -67,9 +71,10 @@ This project goes beyond a single model notebook because it includes:
 Compared with typical churn demo projects, this platform stands out because it:
 - ties predictions directly to `revenue_at_risk`
 - includes both API and browser workflows
-- supports compatible file uploads
+- supports schema-mapped file uploads
 - generates synthetic temporal history for trend analysis
 - stores outputs in a PostgreSQL mart for BI consumption
+- includes role-aware access and protected internal control surfaces
 
 ## 6. Main Screens for a Buyer Demo
 
@@ -95,8 +100,20 @@ Best for showing:
 ### Upload Preview
 Best for showing:
 - flexibility beyond one hardcoded dataset
-- compatibility validation
+- dataset profiling and mapping
 - immediate scoring feedback
+
+### Login And Role Model
+Best for showing:
+- realistic internal product access
+- read-only public demo mode
+- separation between reviewer and internal operational access
+
+### Admin Controls
+Best for showing:
+- governance thinking
+- operational maturity
+- internal-only control surface design
 
 ### API Docs
 Best for showing:
@@ -115,7 +132,7 @@ Use the KPI cards and latest scoring snapshot.
 Use the monitoring center and drift metrics.
 
 ### Can we test our own compatible customer file?
-Yes, through the upload preview flow.
+Yes, through the upload preview flow with profiling and field mapping.
 
 ### Can BI tools read the output?
 Yes. The project writes to PostgreSQL marts such as `scores_daily` and `customer_snapshots`.
@@ -130,13 +147,15 @@ Yes. The project writes to PostgreSQL marts such as `scores_daily` and `customer
 - monitoring
 - PostgreSQL mart
 - model registry entry registration
+- schema mapping for uploaded datasets
+- authenticated roles
+- admin controls page
 
 ### Natural next enhancements
-- schema mapping for non-compatible uploads
-- authenticated roles
-- admin controls for retraining and threshold changes
+- admin-triggered retraining and threshold changes
 - upload history persistence
-- richer business documentation and buyer-facing exports
+- saved mapping templates
+- richer buyer-facing exports
 
 ## 9. Bottom-Line Buyer Summary
 

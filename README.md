@@ -2,12 +2,12 @@
 
 Production-style churn intelligence application built with Python, FastAPI, PostgreSQL, and browser-based analytics pages.
 
-This project scores customer churn risk, estimates revenue exposure, tracks drift and threshold alerts, exposes a realtime scoring API, and delivers a browser experience for risk operations and business review.
+This project scores customer churn risk, estimates revenue exposure, tracks drift and threshold alerts, exposes a realtime scoring API, and delivers a browser experience for risk operations, internal review, and guided product documentation.
 
 ## Recruiter Snapshot
 - Business use case: churn detection, revenue-at-risk estimation, and customer retention prioritisation
 - End-to-end flow: `ingest -> validate -> features -> train -> batch scoring -> realtime API -> PostgreSQL mart -> monitoring -> browser UI`
-- Includes: batch scoring, realtime scoring API, temporal snapshot generation, PostgreSQL risk mart, drift monitoring, threshold alerts, browser dashboard, customer explorer, and compatible dataset upload preview
+- Includes: batch scoring, realtime scoring API, temporal snapshot generation, PostgreSQL risk mart, drift monitoring, threshold alerts, browser dashboard, customer explorer, schema-mapped dataset upload analysis, auth roles, and browser docs
 - Built with: Python, pandas, scikit-learn, FastAPI, SQLAlchemy, PostgreSQL, Jinja2
 
 ## Product Goal
@@ -18,7 +18,7 @@ Build a business-facing churn intelligence platform that:
 - exposes a realtime scoring endpoint
 - writes batch outputs into a PostgreSQL analytics layer
 - monitors drift and alert thresholds
-- supports browser-based risk review and compatible dataset uploads
+- supports browser-based risk review, protected operations, and schema-mapped dataset uploads
 
 ## Architecture
 Pipeline flow:
@@ -33,7 +33,7 @@ Main layers:
 - `api`: FastAPI scoring API and browser UI routes
 - `db`: PostgreSQL schema and data loading scripts
 - `monitoring`: data drift, prediction drift, threshold alerts
-- `ui`: dashboard, monitoring page, customer explorer, dataset upload preview
+- `ui`: dashboard, monitoring page, customer explorer, login, admin controls, and dataset upload analysis
 
 ## Core Features
 - Public telco churn dataset ingestion and validation
@@ -45,11 +45,18 @@ Main layers:
 - Temporal customer snapshots for 12-month trend analysis
 - PostgreSQL mart with `customers_raw`, `features`, `scores_daily`, `customer_snapshots`, `drift_metrics`, and `model_registry`
 - Drift monitoring and threshold alert pipelines
+- Session-based login with `viewer`, `analyst`, and `admin` role model
+- Public read-only viewer demo account with guarded upload actions
+- Internal admin controls page for registry review and operational governance
+- Upload profiling, synonym-based schema suggestions, and manual field mapping
 - Browser pages:
   - `/`
   - `/monitoring`
   - `/customers`
   - `/upload`
+  - `/login`
+  - `/admin`
+  - `/docs/guide/`
 
 ## Data Source
 - Source file: `Telco-Customer-Churn.csv`
@@ -79,14 +86,16 @@ Metrics source: [`reports/train_metrics.json`](reports/train_metrics.json)
 Main browser pages:
 - `/` - executive risk overview with KPI cards, trend chart, segment mix, and top risky customers
 - `/monitoring` - drift and threshold alert review
-- `/customers` - analyst queue with filters by risk segment and contract
-- `/upload` - compatible dataset upload and scoring preview
-- `/docs/guide/` - browser-friendly documentation hub with user, testing, and buyer guides
+- `/customers` - analyst queue with compact filters by risk segment and contract
+- `/upload` - protected upload analysis flow with profiling, mapping suggestions, and scoring preview
+- `/login` - session-based entry point for the browser app
+- `/admin` - internal admin controls page for model registry review and governance summary
+- `/docs/guide/` - browser-friendly documentation hub with user, testing, buyer, and upload schema guides
 
 Role model:
 - `viewer` - read-only dashboard, customers, monitoring, docs, and API docs
 - `analyst` - everything in viewer plus upload profiling and mapped scoring
-- `admin` - everything in analyst plus admin-ready operational access for future controls
+- `admin` - everything in analyst plus admin controls access
 - `/docs/upload-schema-guide/` - upload validation and schema mapping guidance
 
 Detailed business summary: [`reports/REPORT.md`](reports/REPORT.md)
@@ -110,7 +119,12 @@ The customer explorer helps analysts filter the latest customer population by ri
 ### Dataset Upload Preview
 ![Dataset upload preview](assets/screenshots/upload.png)
 
-The upload page accepts compatible CSV, Parquet, and Excel files, validates the schema, and produces an in-memory scoring preview without overwriting the core production snapshot.
+The upload page now profiles uploaded files, suggests schema mappings, allows manual field selection, and produces an in-memory scoring preview without overwriting the core production snapshot.
+
+### Login And Role-Gated Access
+![Login and demo access](assets/screenshots/login.png)
+
+The browser app includes session-based login, a public read-only viewer account for demos, and guarded upload/admin surfaces for authorised internal roles.
 
 ### Realtime API Documentation
 ![Realtime API documentation](assets/screenshots/docs.png)
@@ -253,20 +267,23 @@ Open:
 - `http://127.0.0.1:8010/docs`
 
 ## Dataset Upload Mode
-The browser app already supports a `compatible upload mode`:
+The browser app already supports a `schema-mapped upload mode`:
 - upload `CSV`, `Parquet`, or `Excel`
-- validate required telco-compatible columns
+- profile rows, columns, missingness, and numeric coverage
+- suggest schema mappings from alternative column names
+- allow manual field mapping before scoring
 - run scoring preview in-memory
 - show KPI summary and top risky uploaded customers
 
 Current scope:
-- supports datasets compatible with the project schema
+- supports uploaded datasets that can be mapped to the telco-compatible business fields
 - does not overwrite the core production snapshot automatically
+- keeps viewer accounts in read-only mode
 
 Planned next:
-- schema mapping for alternative dataset column names
 - upload persistence and run history
-- model registry integration for alternate scoring profiles
+- saved mapping templates
+- richer internal admin actions for retraining and monitoring reruns
 
 ## Monitoring
 Implemented monitoring pipelines:
@@ -297,13 +314,15 @@ Current test coverage:
 - documentation routes test
 - upload schema mapping test
 - login page and access redirect test
+- admin route protection test
 
 ## Why This Project Stands Out
 - Moves beyond a simple churn notebook into a production-style risk application
 - Ties model output to business value through `revenue_at_risk`
 - Includes both API scoring and browser-based risk review
 - Adds temporal snapshots for monitoring and trend analytics
-- Supports compatible dataset upload instead of hard-locking the app to one demo flow
+- Supports schema-mapped dataset upload instead of hard-locking the app to one demo flow
+- Includes authentication, role-aware access, and internal admin surface design
 
 ## Portfolio Packaging
 - Business report: [`reports/REPORT.md`](reports/REPORT.md)
@@ -316,8 +335,10 @@ Current test coverage:
 - `src/churn_risk/train` - training, retraining, and artifacts
 - `src/churn_risk/batch` - batch scoring outputs
 - `src/churn_risk/api` - FastAPI routes for API and browser UI
+- `src/churn_risk/auth` - password hashing, authentication, and session role helpers
 - `src/churn_risk/db` - PostgreSQL schema, loaders, and model registry
 - `src/churn_risk/monitoring` - drift and threshold monitoring jobs
+- `src/churn_risk/upload_analysis` - dataset profiling, staging, synonyms, and schema mapping
 - `src/churn_risk/ui` - templates, dashboard services, and static assets
 - `assets/screenshots` - README screenshots
 - `reports` - training metrics and business-facing report

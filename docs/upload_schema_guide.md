@@ -60,7 +60,16 @@ Examples of automatically suggested matches:
 
 The suggestions are only helpers. Users can override them manually before scoring.
 
-## 5. Expected Value Style
+## 5. Access And Execution Rules
+
+The upload page is role-aware:
+- `viewer` can inspect the workflow in read-only mode
+- `analyst` can run profiling and mapped scoring
+- `admin` can run profiling and mapped scoring and access future protected controls
+
+This means that seeing the page is not the same as being allowed to execute upload actions.
+
+## 6. Expected Value Style
 
 The current scoring engine works best when mapped values look similar to the telco-compatible format.
 
@@ -75,7 +84,7 @@ Examples:
 - `MonthlyCharges`: numeric
 - `TotalCharges`: numeric
 
-## 6. What Happens During Upload
+## 7. What Happens During Upload
 
 1. The file is uploaded
 2. The app profiles rows, columns, missingness, and data types
@@ -85,7 +94,7 @@ Examples:
 6. The app engineers features and runs the trained churn model
 7. The app returns KPI summary and a preview of top risky customers
 
-## 7. What Is Not Supported Yet
+## 8. What Is Not Supported Yet
 
 The current workflow does not yet support:
 - fully automatic scoring for arbitrary targets
@@ -93,7 +102,7 @@ The current workflow does not yet support:
 - saved upload history in the browser app
 - reusable saved mapping templates per dataset family
 
-## 8. Best-Practice Upload Advice
+## 9. Best-Practice Upload Advice
 
 For the best scoring experience:
 - use one row per customer
@@ -102,15 +111,16 @@ For the best scoring experience:
 - avoid mixing multiple business entities in the same file
 - review the mapping suggestions before running scoring
 
-## 9. Common Reasons Scoring Fails
+## 10. Common Reasons Scoring Fails
 
 Typical causes:
 - one or more required business fields are still unmapped
 - numeric columns contain unparseable values
 - uploaded data is too different from the expected telco-style customer profile
 - business values use unsupported categories without cleanup
+- the logged-in account is in read-only viewer mode
 
-## 10. Recommended Next Step for Broader Support
+## 11. Recommended Next Step for Broader Support
 
 If wider dataset support is needed, the natural enhancement is:
 - saved schema templates
