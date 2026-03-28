@@ -14,9 +14,29 @@
                 <h1>Command Center</h1>
                 <p class="brand-copy">Churn intelligence, revenue exposure analytics, monitoring, and browser-based decision support.</p>
             </div>
-            <div class="topbar-actions">
-                <a href="/upload" class="action-button">Upload Dataset</a>
-                <a href="/docs" class="action-button action-button-secondary">API Docs</a>
+            <div class="topbar-utility">
+                <div class="topbar-actions">
+                    <a href="/upload" class="action-button">Upload Dataset</a>
+                    <a href="/docs" class="action-button action-button-secondary">API Docs</a>
+                </div>
+                {% if current_user %}
+                <div class="session-panel">
+                    <div class="user-chip">
+                        <span>Signed in as</span>
+                        <strong>{{ current_user.username }}</strong>
+                    </div>
+                    <div class="role-pill">{{ current_user.role }}</div>
+                    <a href="/logout" class="session-link">Sign Out</a>
+                </div>
+                {% else %}
+                <div class="session-panel session-panel-guest">
+                    <div class="user-chip">
+                        <span>Session</span>
+                        <strong>Guest mode</strong>
+                    </div>
+                    <a href="/login" class="session-link">Sign In</a>
+                </div>
+                {% endif %}
             </div>
         </header>
         <nav class="topnav">

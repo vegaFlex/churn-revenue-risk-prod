@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="auth-shell">
+    <article class="panel auth-panel">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Access</p>
+                <h3>Sign in to the platform</h3>
+            </div>
+            <div class="panel-caption">Public demo access is currently exposed through the viewer role</div>
+        </div>
+
+        <div class="auth-layout">
+            <form method="post" action="/login" class="auth-form">
+                <label class="mapping-field">
+                    <span>Username</span>
+                    <input type="text" name="username" class="auth-input" required>
+                </label>
+                <label class="mapping-field">
+                    <span>Password</span>
+                    <input type="password" name="password" class="auth-input" required>
+                </label>
+                <button type="submit" class="primary-button auth-submit">Sign in</button>
+
+                {% if error_message %}
+                <div class="error-banner">{{ error_message }}</div>
+                {% endif %}
+            </form>
+
+            <aside class="auth-demo-card">
+                <p class="eyebrow">Demo Access</p>
+                <h4>Read-only reviewer account</h4>
+                <div class="demo-credential">
+                    <span>Username</span>
+                    <strong>viewer_demo</strong>
+                </div>
+                <div class="demo-credential">
+                    <span>Password</span>
+                    <strong>ViewerPass123!</strong>
+                </div>
+                <p class="auth-demo-copy">
+                    This account can review dashboards, customer views, monitoring pages, and browser documentation without changing data or running upload actions.
+                </p>
+            </aside>
+        </div>
+    </article>
+</section>
+{% endblock %}

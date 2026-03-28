@@ -34,7 +34,7 @@
                 <span id="selected-file-name" class="upload-picker-name">No file selected</span>
             </div>
         </label>
-        <button type="submit" class="primary-button">Profile dataset</button>
+        <button type="submit" class="primary-button" {% if not can_manage_upload %}disabled{% endif %}>Profile dataset</button>
     </form>
 
     <div class="upload-copy">
@@ -42,6 +42,10 @@
         <p>The app now supports schema mapping. Upload a table, review the profile, map the columns to the required churn fields, and then run the scoring preview.</p>
         <p><a href="/docs/upload-schema-guide/" class="inline-doc-link">Open the Upload Schema Guide</a> for validation rules, required fields, and mapping examples.</p>
     </div>
+
+    {% if permission_warning %}
+    <div class="warning-banner">{{ permission_warning }}</div>
+    {% endif %}
 
     {% if error_message %}
     <div class="error-banner">{{ error_message }}</div>
@@ -115,7 +119,7 @@
                 </label>
                 {% endfor %}
             </div>
-            <button type="submit" class="primary-button">Run mapped scoring preview</button>
+            <button type="submit" class="primary-button" {% if not can_manage_upload %}disabled{% endif %}>Run mapped scoring preview</button>
         </form>
     </article>
 </section>

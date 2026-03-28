@@ -29,6 +29,7 @@ class Settings:
         "DATABASE_URL",
         "postgresql+psycopg2://postgres:CHANGE_ME@localhost:5432/churn_risk",
     )
+    session_secret_key: str = os.getenv("SESSION_SECRET_KEY", "CHANGE_ME_SESSION_SECRET")
     alert_revenue_at_risk_total: float = float(os.getenv("ALERT_REVENUE_AT_RISK_TOTAL", "50000"))
     alert_avg_churn_probability: float = float(os.getenv("ALERT_AVG_CHURN_PROBABILITY", "0.45"))
 

@@ -82,6 +82,11 @@ Main browser pages:
 - `/customers` - analyst queue with filters by risk segment and contract
 - `/upload` - compatible dataset upload and scoring preview
 - `/docs/guide/` - browser-friendly documentation hub with user, testing, and buyer guides
+
+Role model:
+- `viewer` - read-only dashboard, customers, monitoring, docs, and API docs
+- `analyst` - everything in viewer plus upload profiling and mapped scoring
+- `admin` - everything in analyst plus admin-ready operational access for future controls
 - `/docs/upload-schema-guide/` - upload validation and schema mapping guidance
 
 Detailed business summary: [`reports/REPORT.md`](reports/REPORT.md)
@@ -167,7 +172,7 @@ Example response:
 2. `.\.venv\Scripts\Activate.ps1`
 3. `pip install -r requirements.txt`
 4. Create PostgreSQL database `churn_risk`
-5. Update `.env` with the correct PostgreSQL password and port
+5. Update `.env` with the correct PostgreSQL password, port, and `SESSION_SECRET_KEY`
 
 ## End-to-End Run Order
 1. Download raw data
@@ -216,6 +221,7 @@ $env:PYTHONPATH='src'; .\.venv\Scripts\python -m churn_risk.ingest.generate_temp
 
 ```powershell
 $env:PYTHONPATH='src'; .\.venv\Scripts\python -m churn_risk.db.init_db
+$env:PYTHONPATH='src'; .\.venv\Scripts\python -m churn_risk.db.seed_users
 $env:PYTHONPATH='src'; .\.venv\Scripts\python -m churn_risk.db.load_raw_to_db
 $env:PYTHONPATH='src'; .\.venv\Scripts\python -m churn_risk.db.load_features_to_db
 $env:PYTHONPATH='src'; .\.venv\Scripts\python -m churn_risk.db.load_scores_to_db
@@ -237,6 +243,7 @@ $env:PYTHONPATH='src'; .\.venv\Scripts\uvicorn churn_risk.api.app:app --host 127
 ```
 
 Open:
+- `http://127.0.0.1:8010/login`
 - `http://127.0.0.1:8010/`
 - `http://127.0.0.1:8010/monitoring`
 - `http://127.0.0.1:8010/customers`
@@ -287,6 +294,9 @@ Current test coverage:
 - feature engineering unit test
 - realtime `/score` API test
 - batch scoring smoke test
+- documentation routes test
+- upload schema mapping test
+- login page and access redirect test
 
 ## Why This Project Stands Out
 - Moves beyond a simple churn notebook into a production-style risk application

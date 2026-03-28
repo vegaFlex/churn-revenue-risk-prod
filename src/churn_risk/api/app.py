@@ -5,11 +5,13 @@ from functools import lru_cache
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI, File, Form, Request, UploadFile
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
+from starlette.middleware.sessions import SessionMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from churn_risk.api.schemas import ScoreRequest, ScoreResponse
+from churn_risk.auth.service import authenticate_user, get_current_user
 from churn_risk.config import settings
 from churn_risk.scoring import (
     build_model_input,
@@ -21,6 +23,7 @@ from churn_risk.ui.customers_service import build_customers_context
 from churn_risk.ui.dashboard_service import build_dashboard_context
 from churn_risk.ui.docs_service import build_doc_page_context, build_docs_hub_context
 from churn_risk.ui.monitoring_service import build_monitoring_context
+from churn_risk.ui.auth_service import build_login_context
 from churn_risk.upload_analysis import (
     REQUIRED_UPLOAD_COLUMNS,
     apply_column_mapping,
@@ -43,6 +46,16 @@ app = FastAPI(
 )
 templates = Jinja2Templates(directory="src/churn_risk/ui/templates")
 app.mount("/static", StaticFiles(directory="src/churn_risk/ui/static"), name="static")
+app.add_middleware(SessionMiddleware, secret_key=settings.session_secret_key)
+
+
+def enrich_context(request: Request, context: dict) -> dict:
+    context["request"] = request
+    context["current_user"] = get_current_user(request)
+    context["can_manage_upload"] = bool(
+        context["current_user"] and context["current_user"]["role"] in {"analyst", "admin"}
+    )
+    return context
 
 
 @lru_cache
@@ -84,14 +97,14 @@ def healthcheck() -> dict[str, str]:
 @app.get("/", response_class=HTMLResponse)
 def dashboard(request: Request):
     context = build_dashboard_context()
-    context["request"] = request
+    context = enrich_context(request, context)
     return templates.TemplateResponse(request, "dashboard.html", context)
 
 
 @app.get("/monitoring", response_class=HTMLResponse)
 def monitoring_page(request: Request):
     context = build_monitoring_context()
-    context["request"] = request
+    context = enrich_context(request, context)
     return templates.TemplateResponse(request, "monitoring.html", context)
 
 
@@ -102,15 +115,18 @@ def customers_page(
     contract: str | None = None,
 ):
     context = build_customers_context(risk_segment=risk_segment, contract=contract)
-    context["request"] = request
+    context = enrich_context(request, context)
     return templates.TemplateResponse(request, "customers.html", context)
 
 
 @app.get("/upload", response_class=HTMLResponse)
 def upload_page(request: Request):
+    current_user = get_current_user(request)
+    if current_user is None:
+        return RedirectResponse(url="/login", status_code=303)
+
     context = {
         "page_title": "Dataset Upload",
-        "request": request,
         "upload_summary": None,
         "preview_rows": [],
         "error_message": None,
@@ -119,50 +135,85 @@ def upload_page(request: Request):
         "mapping_fields": [],
         "staged_upload_token": None,
         "uploaded_filename": None,
+        "permission_warning": None,
     }
+    if current_user["role"] not in {"analyst", "admin"}:
+        context["permission_warning"] = (
+            "Viewer mode is read-only. You can inspect the upload workflow, but profiling and scoring "
+            "actions are disabled for this account."
+        )
+    context = enrich_context(request, context)
     return templates.TemplateResponse(request, "upload.html", context)
 
 
 @app.get("/docs/guide/", response_class=HTMLResponse)
 def documentation_hub(request: Request):
     context = build_docs_hub_context()
-    context["request"] = request
+    context = enrich_context(request, context)
     return templates.TemplateResponse(request, "documentation_hub.html", context)
 
 
 @app.get("/docs/user-guide/", response_class=HTMLResponse)
 def user_guide(request: Request):
     context = build_doc_page_context("user-guide")
-    context["request"] = request
+    context = enrich_context(request, context)
     return templates.TemplateResponse(request, "documentation_page.html", context)
 
 
 @app.get("/docs/manual-testing-guide/", response_class=HTMLResponse)
 def manual_testing_guide(request: Request):
     context = build_doc_page_context("manual-testing-guide")
-    context["request"] = request
+    context = enrich_context(request, context)
     return templates.TemplateResponse(request, "documentation_page.html", context)
 
 
 @app.get("/docs/buyer-guide/", response_class=HTMLResponse)
 def buyer_guide(request: Request):
     context = build_doc_page_context("buyer-guide")
-    context["request"] = request
+    context = enrich_context(request, context)
     return templates.TemplateResponse(request, "documentation_page.html", context)
 
 
 @app.get("/docs/upload-schema-guide/", response_class=HTMLResponse)
 def upload_schema_guide(request: Request):
     context = build_doc_page_context("upload-schema-guide")
-    context["request"] = request
+    context = enrich_context(request, context)
     return templates.TemplateResponse(request, "documentation_page.html", context)
+
+
+@app.get("/login", response_class=HTMLResponse)
+def login_page(request: Request):
+    context = build_login_context(request)
+    context = enrich_context(request, context)
+    return templates.TemplateResponse(request, "login.html", context)
+
+
+@app.post("/login")
+async def login(request: Request, username: str = Form(...), password: str = Form(...)):
+    user = authenticate_user(username, password)
+    if user is None:
+        context = build_login_context(request, error_message="Invalid username or password.")
+        context = enrich_context(request, context)
+        return templates.TemplateResponse(request, "login.html", context, status_code=401)
+
+    request.session["user"] = user
+    return RedirectResponse(url="/", status_code=303)
+
+
+@app.get("/logout")
+def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(url="/login", status_code=303)
 
 
 @app.post("/upload", response_class=HTMLResponse)
 async def upload_dataset(request: Request, dataset_file: UploadFile = File(...)):
+    current_user = get_current_user(request)
+    if current_user is None:
+        return RedirectResponse(url="/login", status_code=303)
+
     context = {
         "page_title": "Dataset Upload",
-        "request": request,
         "upload_summary": None,
         "preview_rows": [],
         "error_message": None,
@@ -171,7 +222,15 @@ async def upload_dataset(request: Request, dataset_file: UploadFile = File(...))
         "mapping_fields": [],
         "staged_upload_token": None,
         "uploaded_filename": None,
+        "permission_warning": None,
     }
+    context = enrich_context(request, context)
+    if current_user["role"] not in {"analyst", "admin"}:
+        context["permission_warning"] = (
+            "Upload actions are not permitted in viewer mode. This account can review the page, but "
+            "profiling and scoring uploads require an authorised internal role."
+        )
+        return templates.TemplateResponse(request, "upload.html", context, status_code=403)
 
     try:
         file_content = await dataset_file.read()
@@ -215,6 +274,10 @@ async def upload_score_mapped(
     MonthlyCharges: str = Form(""),
     TotalCharges: str = Form(""),
 ):
+    current_user = get_current_user(request)
+    if current_user is None:
+        return RedirectResponse(url="/login", status_code=303)
+
     mapping = {
         field: value
         for field, value in {
@@ -242,7 +305,6 @@ async def upload_score_mapped(
     }
     context = {
         "page_title": "Dataset Upload",
-        "request": request,
         "upload_summary": None,
         "preview_rows": [],
         "error_message": None,
@@ -251,7 +313,15 @@ async def upload_score_mapped(
         "mapping_fields": [],
         "staged_upload_token": staged_upload_token,
         "uploaded_filename": None,
+        "permission_warning": None,
     }
+    context = enrich_context(request, context)
+    if current_user["role"] not in {"analyst", "admin"}:
+        context["permission_warning"] = (
+            "Mapped scoring is disabled in viewer mode. This account can inspect the workflow but cannot "
+            "run upload-based scoring actions."
+        )
+        return templates.TemplateResponse(request, "upload.html", context, status_code=403)
 
     try:
         uploaded_df = load_staged_dataset(staged_upload_token)

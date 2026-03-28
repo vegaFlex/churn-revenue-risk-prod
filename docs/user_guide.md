@@ -24,7 +24,37 @@ The application is designed for:
 - product managers reviewing churn pressure
 - technical reviewers validating API and monitoring workflows
 
-## 3. Main Navigation
+## 3. Access Roles
+
+### Viewer
+Read-oriented access.
+
+Can:
+- open the dashboard
+- open customer explorer
+- open monitoring
+- open browser documentation
+- open API docs
+
+Cannot:
+- use dataset upload
+
+### Analyst
+Operational scoring role.
+
+Can:
+- access everything available to Viewer
+- use the upload profiling and schema mapping flow
+- run mapped scoring previews
+
+### Admin
+Full demo administration role.
+
+Can:
+- access everything available to Analyst
+- use admin-only operational credentials for future control features
+
+## 4. Main Navigation
 
 ### Overview
 Main business dashboard.
@@ -68,7 +98,7 @@ Use it for:
 - reviewing payload and response contracts
 - demonstrating the technical integration layer
 
-## 4. Dashboard
+## 5. Dashboard
 
 URL:
 `/`
@@ -103,7 +133,7 @@ Use it to identify:
 - who should be prioritised first
 - which contract/payment combinations are most exposed
 
-## 5. Customer Explorer
+## 6. Customer Explorer
 
 URL:
 `/customers`
@@ -129,7 +159,7 @@ This page is the main analyst queue.
 
 Use it when the dashboard shortlist is not enough and you need a wider review queue.
 
-## 6. Monitoring Center
+## 7. Monitoring Center
 
 URL:
 `/monitoring`
@@ -154,7 +184,7 @@ Use it to:
 - explain alerts during demos or technical review
 - confirm whether recent behaviour changes are acceptable
 
-## 7. Dataset Upload Preview
+## 8. Dataset Upload Preview
 
 URL:
 `/upload`
@@ -178,7 +208,7 @@ Allows users to test compatible customer files without replacing the core produc
 - it does not automatically overwrite the main production scoring snapshot
 - it does not yet persist uploaded runs into history tables
 
-## 8. Realtime API
+## 9. Realtime API
 
 Key endpoints:
 - `GET /health`
@@ -190,7 +220,7 @@ Use the API layer for:
 - integration testing
 - validating one customer profile at a time
 
-## 9. Typical User Flows
+## 10. Typical User Flows
 
 ### Business review flow
 1. Open `Overview`
@@ -217,7 +247,7 @@ Use the API layer for:
 3. Run scoring preview
 4. Review KPI summary and top exposed customers
 
-## 10. Troubleshooting
+## 11. Troubleshooting
 
 ### The app does not open on `8000`
 The project may already have another service on that port. Use:

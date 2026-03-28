@@ -124,3 +124,14 @@ class ModelRegistry(Base):
     artifact_path: Mapped[str] = mapped_column(String(255))
     preprocessor_path: Mapped[str] = mapped_column(String(255))
     registered_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class AppUser(Base):
+    __tablename__ = "app_users"
+
+    user_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    username: Mapped[str] = mapped_column(String(64), unique=True)
+    password_hash: Mapped[str] = mapped_column(String(255))
+    role: Mapped[str] = mapped_column(String(32))
+    is_active: Mapped[int] = mapped_column(Integer, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
