@@ -4,8 +4,7 @@ from functools import lru_cache
 
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI
-from fastapi.requests import Request
+from fastapi import FastAPI, File, Request, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -21,6 +20,7 @@ from churn_risk.scoring import (
 from churn_risk.ui.customers_service import build_customers_context
 from churn_risk.ui.dashboard_service import build_dashboard_context
 from churn_risk.ui.monitoring_service import build_monitoring_context
+from churn_risk.ui.upload_service import score_uploaded_dataset
 
 
 app = FastAPI(
@@ -93,6 +93,43 @@ def customers_page(
     context = build_customers_context(risk_segment=risk_segment, contract=contract)
     context["request"] = request
     return templates.TemplateResponse(request, "customers.html", context)
+
+
+@app.get("/upload", response_class=HTMLResponse)
+def upload_page(request: Request):
+    context = {
+        "page_title": "Dataset Upload",
+        "request": request,
+        "upload_summary": None,
+        "preview_rows": [],
+        "error_message": None,
+    }
+    return templates.TemplateResponse(request, "upload.html", context)
+
+
+@app.post("/upload", response_class=HTMLResponse)
+async def upload_dataset(request: Request, dataset_file: UploadFile = File(...)):
+    context = {
+        "page_title": "Dataset Upload",
+        "request": request,
+        "upload_summary": None,
+        "preview_rows": [],
+        "error_message": None,
+    }
+
+    try:
+        model, preprocessor = get_inference_assets()
+        file_content = await dataset_file.read()
+        from churn_risk.ui.upload_service import read_uploaded_dataset
+
+        uploaded_df = read_uploaded_dataset(dataset_file.filename or "uploaded.csv", file_content)
+        summary, preview_rows = score_uploaded_dataset(uploaded_df, model, preprocessor)
+        context["upload_summary"] = summary
+        context["preview_rows"] = preview_rows
+    except Exception as exc:  # noqa: BLE001
+        context["error_message"] = str(exc)
+
+    return templates.TemplateResponse(request, "upload.html", context)
 
 
 @app.post("/score", response_model=ScoreResponse)

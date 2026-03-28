@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Compatible upload mode</p>
+        <h2>Dataset intake</h2>
+    </div>
+    <div class="hero-pill">Upload CSV, Parquet, or Excel to generate churn and revenue risk scores</div>
+</section>
+
+<section class="panel upload-panel">
+    <div class="panel-header">
+        <div>
+            <p class="eyebrow">Upload dataset</p>
+            <h3>Score a compatible customer file</h3>
+        </div>
+        <div class="panel-caption">Required schema must match the telco-compatible scoring profile</div>
+    </div>
+
+    <form method="post" action="/upload" enctype="multipart/form-data" class="upload-form">
+        <label class="upload-field">
+            <span>Select file</span>
+            <input type="file" name="dataset_file" accept=".csv,.parquet,.xlsx" required>
+        </label>
+        <button type="submit" class="primary-button">Run scoring preview</button>
+    </form>
+
+    <div class="upload-copy">
+        <p>Supported formats: <strong>CSV</strong>, <strong>Parquet</strong>, <strong>Excel (.xlsx)</strong></p>
+        <p>Minimum required columns: customer profile fields from the telco-compatible schema. Churn target is not required for scoring preview.</p>
+    </div>
+
+    {% if error_message %}
+    <div class="error-banner">{{ error_message }}</div>
+    {% endif %}
+</section>
+
+{% if upload_summary %}
+<section class="kpi-grid">
+    <article class="kpi-card">
+        <p class="kpi-label">Rows Scored</p>
+        <p class="kpi-value">{{ upload_summary.rows_scored }}</p>
+        <p class="kpi-hint">Rows successfully passed through the compatible scoring layer</p>
+    </article>
+    <article class="kpi-card">
+        <p class="kpi-label">Total Revenue At Risk</p>
+        <p class="kpi-value">{{ upload_summary.total_revenue_at_risk }}</p>
+        <p class="kpi-hint">Combined projected exposure for the uploaded file</p>
+    </article>
+    <article class="kpi-card">
+        <p class="kpi-label">Average Churn Probability</p>
+        <p class="kpi-value">{{ upload_summary.avg_churn_probability }}</p>
+        <p class="kpi-hint">Mean predicted churn probability across uploaded customers</p>
+    </article>
+    <article class="kpi-card">
+        <p class="kpi-label">High Risk Customers</p>
+        <p class="kpi-value">{{ upload_summary.high_risk_customers }}</p>
+        <p class="kpi-hint">Customers in the uploaded file classified as high risk</p>
+    </article>
+</section>
+
+<section class="panel panel-table">
+    <div class="panel-header">
+        <div>
+            <p class="eyebrow">Scoring preview</p>
+            <h3>Top uploaded customers by revenue exposure</h3>
+        </div>
+        <div class="panel-caption">Preview only. Source files remain under user control.</div>
+    </div>
+    <div class="table-shell">
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Contract</th>
+                    <th>Payment</th>
+                    <th>Monthly</th>
+                    <th>Churn</th>
+                    <th>Revenue at Risk</th>
+                    <th>Segment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in preview_rows %}
+                <tr>
+                    <td>{{ row.customerID }}</td>
+                    <td>{{ row.Contract }}</td>
+                    <td>{{ row.PaymentMethod }}</td>
+                    <td>${{ "%.2f"|format(row.MonthlyCharges) }}</td>
+                    <td>{{ "%.1f%%"|format(row.churn_probability * 100) }}</td>
+                    <td>${{ "%.2f"|format(row.revenue_at_risk) }}</td>
+                    <td><span class="badge badge-{{ row.risk_segment }}">{{ row.risk_segment }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
