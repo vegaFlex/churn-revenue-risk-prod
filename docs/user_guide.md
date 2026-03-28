@@ -101,8 +101,10 @@ Restricted internal operations page.
 
 Use it for:
 - reviewing latest registered model versions
-- reviewing monitoring readiness from an admin surface
-- validating internal governance layout for future protected actions
+- running the monitoring suite
+- retraining and registering a fresh model version
+- refreshing analytics mart tables
+- reviewing internal governance status
 
 ### API Docs
 Swagger documentation for the realtime API.
@@ -292,3 +294,6 @@ That can be expected if the uploaded population has a different customer mix fro
 ### The upload page is visible but actions are disabled
 That means the logged-in account is `viewer` role.
 Viewer access is intentionally read-only.
+
+### Admin panel actions do not appear
+The `Admin` navigation item appears only when the logged-in account has `admin` role.

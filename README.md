@@ -47,7 +47,7 @@ Main layers:
 - Drift monitoring and threshold alert pipelines
 - Session-based login with `viewer`, `analyst`, and `admin` role model
 - Public read-only viewer demo account with guarded upload actions
-- Internal admin controls page for registry review and operational governance
+- Internal admin controls page for registry review, monitoring execution, retraining, and mart refresh actions
 - Upload profiling, synonym-based schema suggestions, and manual field mapping
 - Browser pages:
   - `/`
@@ -89,13 +89,13 @@ Main browser pages:
 - `/customers` - analyst queue with compact filters by risk segment and contract
 - `/upload` - protected upload analysis flow with profiling, mapping suggestions, and scoring preview
 - `/login` - session-based entry point for the browser app
-- `/admin` - internal admin controls page for model registry review and governance summary
+- `/admin` - internal admin controls page for monitoring runs, retraining, mart refresh, and registry review
 - `/docs/guide/` - browser-friendly documentation hub with user, testing, buyer, and upload schema guides
 
 Role model:
 - `viewer` - read-only dashboard, customers, monitoring, docs, and API docs
 - `analyst` - everything in viewer plus upload profiling and mapped scoring
-- `admin` - everything in analyst plus admin controls access
+- `admin` - everything in analyst plus protected operational actions in the admin panel
 - `/docs/upload-schema-guide/` - upload validation and schema mapping guidance
 
 Detailed business summary: [`reports/REPORT.md`](reports/REPORT.md)
@@ -125,6 +125,11 @@ The upload page now profiles uploaded files, suggests schema mappings, allows ma
 ![Login and demo access](assets/screenshots/login.png)
 
 The browser app includes session-based login, a public read-only viewer account for demos, and guarded upload/admin surfaces for authorised internal roles.
+
+### Admin Controls
+![Admin controls](assets/screenshots/admin.png)
+
+The admin panel provides protected operational actions for rerunning monitoring jobs, retraining and registering models, refreshing mart tables, and reviewing the most recent registry entries.
 
 ### Realtime API Documentation
 ![Realtime API documentation](assets/screenshots/docs.png)
@@ -283,7 +288,7 @@ Current scope:
 Planned next:
 - upload persistence and run history
 - saved mapping templates
-- richer internal admin actions for retraining and monitoring reruns
+- threshold editing from the admin surface
 
 ## Monitoring
 Implemented monitoring pipelines:
@@ -315,6 +320,7 @@ Current test coverage:
 - upload schema mapping test
 - login page and access redirect test
 - admin route protection test
+- admin action execution test
 
 ## Why This Project Stands Out
 - Moves beyond a simple churn notebook into a production-style risk application

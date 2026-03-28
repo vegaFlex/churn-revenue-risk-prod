@@ -23,6 +23,7 @@ Open and confirm all of the following pages return successfully:
 - `/monitoring`
 - `/customers`
 - `/upload`
+- `/admin`
 - `/docs/guide/`
 - `/docs`
 
@@ -30,6 +31,7 @@ Expected result:
 - all pages load without server errors
 - navigation works
 - translation is browser-controlled and pages remain readable
+- `/admin` redirects to `/login` when not authenticated
 
 ## 4. Dashboard Test
 
@@ -112,7 +114,26 @@ Expected result:
   - `revenue_at_risk`
   - `risk_segment`
 
-## 9. Database Validation
+## 9. Admin Controls Test
+
+Open `/admin`
+
+Confirm:
+- anonymous users are redirected to `/login`
+- viewer users receive a restricted access response
+- admin users can see protected action cards
+
+If logged in as admin, confirm:
+- `Run Monitoring` completes
+- `Retrain + Register` returns a success banner
+- `Refresh Mart` returns a success banner
+
+Expected result:
+- no unauthorised access
+- success and error banners are readable
+- the page remains usable after actions complete
+
+## 10. Database Validation
 
 Confirm the main tables contain rows:
 - `customers_raw`
@@ -126,7 +147,7 @@ Confirm the main tables contain rows:
 Expected result:
 - no critical table is empty after the full pipeline run
 
-## 10. Regression Checklist
+## 11. Regression Checklist
 
 After UI changes, always re-check:
 - login page layout
@@ -138,10 +159,11 @@ After UI changes, always re-check:
 - upload page language
 - viewer read-only messaging
 - admin route protection
+- admin action execution
 - screenshot paths in README
 - Swagger docs access
 
-## 11. Pass Criteria
+## 12. Pass Criteria
 
 The release is manually acceptable when:
 - browser pages load

@@ -11,15 +11,16 @@ DOCS_REGISTRY = {
         "title": "Revenue Risk and Customer Churn Intelligence Platform - User Guide",
         "subtitle": (
             "Browser-friendly product documentation for analysts, reviewers, and business users "
-            "working with churn intelligence, role-based access, revenue exposure, and monitoring workflows."
+            "working with churn intelligence, role-based access, revenue exposure, monitoring workflows, "
+            "and protected admin operations."
         ),
         "path": DOCS_DIR / "user_guide.md",
     },
     "manual-testing-guide": {
         "title": "Revenue Risk and Customer Churn Intelligence Platform - Manual Testing Guide",
         "subtitle": (
-            "Step-by-step validation guide for browser pages, auth flows, upload mapping, monitoring, "
-            "and realtime API behaviour."
+            "Step-by-step validation guide for browser pages, auth flows, upload mapping, admin actions, "
+            "monitoring, and realtime API behaviour."
         ),
         "path": DOCS_DIR / "manual_testing_guide.md",
     },
@@ -27,7 +28,7 @@ DOCS_REGISTRY = {
         "title": "Revenue Risk and Customer Churn Intelligence Platform - Buyer Guide",
         "subtitle": (
             "Buyer-facing overview of the product value, differentiators, and real-world use "
-            "cases for churn, revenue-risk operations, and internal control workflows."
+            "cases for churn, revenue-risk operations, and internal operational control workflows."
         ),
         "path": DOCS_DIR / "buyer_guide.md",
     },
@@ -136,8 +137,8 @@ def build_docs_hub_context() -> dict:
         "docs_title": "Revenue Risk and Customer Churn Intelligence Platform - Documentation Center",
         "docs_subtitle": (
             "Browser-friendly documentation for users, reviewers, and buyers, including product "
-            "guides, auth-aware usage instructions, upload mapping guidance, manual testing instructions, "
-            "and buyer-facing positioning."
+            "guides, auth-aware usage instructions, upload mapping guidance, admin operation notes, "
+            "manual testing instructions, and buyer-facing positioning."
         ),
         "docs_nav": DOCS_NAV,
     }

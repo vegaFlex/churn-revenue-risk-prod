@@ -114,6 +114,7 @@ Best for showing:
 - governance thinking
 - operational maturity
 - internal-only control surface design
+- protected operational actions instead of a read-only placeholder
 
 ### API Docs
 Best for showing:
@@ -150,9 +151,10 @@ Yes. The project writes to PostgreSQL marts such as `scores_daily` and `customer
 - schema mapping for uploaded datasets
 - authenticated roles
 - admin controls page
+- admin-triggered monitoring, retraining, registration, and mart refresh
 
 ### Natural next enhancements
-- admin-triggered retraining and threshold changes
+- threshold changes from the admin surface
 - upload history persistence
 - saved mapping templates
 - richer buyer-facing exports
