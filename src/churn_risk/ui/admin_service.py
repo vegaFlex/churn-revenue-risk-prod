@@ -57,7 +57,10 @@ def load_latest_monitoring_snapshot() -> pd.DataFrame:
     return df
 
 
-def build_admin_context() -> dict:
+def build_admin_context(
+    notice_message: str | None = None,
+    notice_tone: str = "info",
+) -> dict:
     registry_df = load_latest_model_registry()
     monitoring_df = load_latest_monitoring_snapshot()
 
@@ -108,15 +111,45 @@ def build_admin_context() -> dict:
     ]
 
     allowed_actions = [
-        "Review the latest registered model versions and their metrics.",
-        "Inspect monitoring readiness before retraining or release actions.",
-        "Use this page as the internal control center for future admin-only operations.",
+        "Run the monitoring suite directly from the browser admin surface.",
+        "Retrain the model and register a fresh version without leaving the app.",
+        "Refresh analytics mart tables after scoring assets change.",
     ]
 
     planned_actions = [
-        "Trigger retraining workflows from the browser.",
-        "Register freshly trained models after validation.",
-        "Run monitoring jobs and refresh alert state from a protected UI.",
+        "Add threshold editing for alert rules.",
+        "Expose protected retraining settings and model promotion controls.",
+        "Add internal user administration and richer operational history.",
+    ]
+
+    action_cards = [
+        {
+            "title": "Run Monitoring Suite",
+            "description": (
+                "Execute data drift, prediction drift, and threshold alert jobs, then refresh the "
+                "admin view with the latest alert state."
+            ),
+            "action": "run_monitoring",
+            "button_label": "Run Monitoring",
+        },
+        {
+            "title": "Retrain And Register Model",
+            "description": (
+                "Retrain the selected model pipeline, save fresh artifacts, and append a new row "
+                "to the model registry."
+            ),
+            "action": "retrain_register",
+            "button_label": "Retrain + Register",
+        },
+        {
+            "title": "Refresh Analytics Mart",
+            "description": (
+                "Rebuild feature outputs, batch scores, temporal snapshots, and reload the main "
+                "PostgreSQL mart tables used by the browser app."
+            ),
+            "action": "refresh_mart",
+            "button_label": "Refresh Mart",
+        },
     ]
 
     return {
@@ -125,4 +158,7 @@ def build_admin_context() -> dict:
         "registry_rows": latest_registry_rows,
         "allowed_actions": allowed_actions,
         "planned_actions": planned_actions,
+        "action_cards": action_cards,
+        "admin_notice_message": notice_message,
+        "admin_notice_tone": notice_tone,
     }

@@ -1,13 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="hero">
+<section class="hero hero-admin">
     <div>
         <p class="eyebrow">Admin controls</p>
         <h2>Operational control center</h2>
     </div>
-    <div class="hero-pill">Restricted internal surface for governance, registry review, and future admin actions</div>
+    <div class="hero-pill hero-pill-admin">Restricted internal surface for governance, registry review, and protected admin actions</div>
 </section>
+
+{% if admin_notice_message %}
+<section class="{{ 'success-banner' if admin_notice_tone == 'success' else 'error-banner' }}">
+    {{ admin_notice_message }}
+</section>
+{% endif %}
 
 <section class="kpi-grid">
     {% for card in control_cards %}
@@ -20,11 +26,32 @@
 </section>
 
 <section class="content-grid admin-grid">
+    <article class="panel panel-admin-actions">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Admin actions</p>
+                <h3>Execute protected workflows</h3>
+            </div>
+            <div class="panel-caption">These actions are available only to authenticated admin users.</div>
+        </div>
+        <div class="admin-action-grid">
+            {% for item in action_cards %}
+            <form method="post" action="/admin/actions" class="admin-action-card">
+                <input type="hidden" name="action_name" value="{{ item.action }}">
+                <p class="eyebrow">Protected action</p>
+                <h4>{{ item.title }}</h4>
+                <p>{{ item.description }}</p>
+                <button type="submit" class="primary-button">{{ item.button_label }}</button>
+            </form>
+            {% endfor %}
+        </div>
+    </article>
+
     <article class="panel">
         <div class="panel-header">
             <div>
-                <p class="eyebrow">Allowed now</p>
-                <h3>Current internal uses</h3>
+                <p class="eyebrow">Current scope</p>
+                <h3>What this panel covers</h3>
             </div>
             <div class="panel-caption">This page is intentionally private and non-public.</div>
         </div>

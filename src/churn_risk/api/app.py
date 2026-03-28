@@ -25,6 +25,18 @@ from churn_risk.ui.docs_service import build_doc_page_context, build_docs_hub_co
 from churn_risk.ui.monitoring_service import build_monitoring_context
 from churn_risk.ui.auth_service import build_login_context
 from churn_risk.ui.admin_service import build_admin_context
+from churn_risk.monitoring.data_drift import main as run_data_drift_job
+from churn_risk.monitoring.prediction_drift import main as run_prediction_drift_job
+from churn_risk.monitoring.threshold_alerts import main as run_threshold_alert_job
+from churn_risk.train.retrain_model import main as retrain_model_job
+from churn_risk.db.register_model import main as register_model_job
+from churn_risk.features.build_features import main as build_features_job
+from churn_risk.batch.score_batch import main as score_batch_job
+from churn_risk.ingest.generate_temporal_dataset import main as generate_snapshots_job
+from churn_risk.db.load_raw_to_db import main as load_raw_job
+from churn_risk.db.load_features_to_db import main as load_features_job
+from churn_risk.db.load_scores_to_db import main as load_scores_job
+from churn_risk.db.load_snapshots_to_db import main as load_snapshots_job
 from churn_risk.upload_analysis import (
     REQUIRED_UPLOAD_COLUMNS,
     apply_column_mapping,
@@ -207,20 +219,66 @@ def logout(request: Request):
     return RedirectResponse(url="/login", status_code=303)
 
 
-@app.get("/admin", response_class=HTMLResponse)
-def admin_controls(request: Request):
+def require_admin_user(request: Request):
     current_user = get_current_user(request)
     if current_user is None:
-        return RedirectResponse(url="/login", status_code=303)
+        return None, RedirectResponse(url="/login", status_code=303)
     if current_user["role"] != "admin":
         context = build_login_context(
             request,
             error_message="Admin controls are restricted to authorised internal users.",
         )
         context = enrich_context(request, context)
-        return templates.TemplateResponse(request, "login.html", context, status_code=403)
+        return current_user, templates.TemplateResponse(request, "login.html", context, status_code=403)
+    return current_user, None
+
+
+@app.get("/admin", response_class=HTMLResponse)
+def admin_controls(request: Request):
+    current_user, failure_response = require_admin_user(request)
+    if failure_response is not None:
+        return failure_response
 
     context = build_admin_context()
+    context = enrich_context(request, context)
+    return templates.TemplateResponse(request, "admin.html", context)
+
+
+@app.post("/admin/actions", response_class=HTMLResponse)
+async def admin_action(request: Request, action_name: str = Form(...)):
+    current_user, failure_response = require_admin_user(request)
+    if failure_response is not None:
+        return failure_response
+
+    try:
+        if action_name == "run_monitoring":
+            run_data_drift_job()
+            run_prediction_drift_job()
+            run_threshold_alert_job()
+            notice_message = "Monitoring suite completed successfully."
+        elif action_name == "retrain_register":
+            retrain_model_job()
+            register_model_job()
+            notice_message = "Model retraining and registry update completed successfully."
+        elif action_name == "refresh_mart":
+            build_features_job()
+            score_batch_job()
+            generate_snapshots_job()
+            load_raw_job()
+            load_features_job()
+            load_scores_job()
+            load_snapshots_job()
+            notice_message = "Analytics mart refresh completed successfully."
+        else:
+            raise ValueError(f"Unknown admin action: {action_name}")
+
+        context = build_admin_context(notice_message=notice_message, notice_tone="success")
+    except Exception as exc:  # noqa: BLE001
+        context = build_admin_context(
+            notice_message=f"Admin action failed: {exc}",
+            notice_tone="error",
+        )
+
     context = enrich_context(request, context)
     return templates.TemplateResponse(request, "admin.html", context)
 

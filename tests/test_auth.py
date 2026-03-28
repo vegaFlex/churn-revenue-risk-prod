@@ -47,3 +47,34 @@ def test_admin_route_requires_admin_role(monkeypatch: MonkeyPatch) -> None:
     response = client.get("/admin")
     assert response.status_code == 403
     assert "Admin controls are restricted to authorised internal users." in response.text
+
+
+def test_admin_action_runs_for_admin(monkeypatch: MonkeyPatch) -> None:
+    client = TestClient(app)
+
+    monkeypatch.setattr(
+        app_module,
+        "get_current_user",
+        lambda request: {"user_id": 99, "username": "admin_demo", "role": "admin"},
+    )
+    monkeypatch.setattr(
+        app_module,
+        "build_admin_context",
+        lambda notice_message=None, notice_tone="info": {
+            "page_title": "Admin Controls",
+            "control_cards": [],
+            "registry_rows": [],
+            "allowed_actions": [],
+            "planned_actions": [],
+            "action_cards": [],
+            "admin_notice_message": notice_message,
+            "admin_notice_tone": notice_tone,
+        },
+    )
+    monkeypatch.setattr(app_module, "run_data_drift_job", lambda: None)
+    monkeypatch.setattr(app_module, "run_prediction_drift_job", lambda: None)
+    monkeypatch.setattr(app_module, "run_threshold_alert_job", lambda: None)
+
+    response = client.post("/admin/actions", data={"action_name": "run_monitoring"})
+    assert response.status_code == 200
+    assert "Monitoring suite completed successfully." in response.text

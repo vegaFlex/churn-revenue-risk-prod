@@ -247,6 +247,16 @@ body {
     font-weight: 600;
 }
 
+.hero-admin {
+    padding: 10px 0 4px;
+}
+
+.hero-pill-admin {
+    background: linear-gradient(135deg, rgba(31, 42, 42, 0.9), rgba(13, 107, 95, 0.9));
+    color: #f7f6f2;
+    box-shadow: 0 16px 34px rgba(31, 42, 42, 0.18);
+}
+
 .kpi-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -284,6 +294,23 @@ body {
 
 .admin-grid {
     grid-template-columns: 1fr 1fr;
+}
+
+.panel-admin-actions {
+    background:
+        linear-gradient(145deg, rgba(31, 42, 42, 0.96), rgba(13, 107, 95, 0.92));
+    color: #f7f6f2;
+}
+
+.panel-admin-actions .panel-caption,
+.panel-admin-actions .eyebrow,
+.panel-admin-actions p {
+    color: rgba(247, 246, 242, 0.8);
+}
+
+.panel-admin-actions h3,
+.panel-admin-actions h4 {
+    color: #ffffff;
 }
 
 .monitoring-layout {
@@ -724,6 +751,15 @@ td {
     border: 1px solid rgba(193, 125, 22, 0.2);
 }
 
+.success-banner {
+    margin: 0 0 18px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(47, 110, 73, 0.12);
+    color: var(--safe);
+    border: 1px solid rgba(47, 110, 73, 0.2);
+}
+
 .auth-shell {
     display: grid;
     place-items: center;
@@ -817,6 +853,31 @@ td {
     border-radius: 16px;
     background: rgba(255, 251, 245, 0.9);
     border: 1px solid rgba(31, 42, 42, 0.08);
+    line-height: 1.55;
+}
+
+.admin-action-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.admin-action-card {
+    display: grid;
+    gap: 10px;
+    padding: 18px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.admin-action-card h4 {
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.admin-action-card p {
+    margin: 0;
     line-height: 1.55;
 }
 
@@ -943,6 +1004,10 @@ td {
     }
 
     .filter-bar-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-action-grid {
         grid-template-columns: 1fr;
     }
 
