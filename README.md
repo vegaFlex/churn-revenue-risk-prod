@@ -63,7 +63,7 @@ Main layers:
 - Selected model recall: `0.7540`
 - Selected model F1: `0.6295`
 
-Metrics source: [train_metrics.json](C:\Users\vega_\Documents\Playground\churn-revenue-risk-prod\reports\train_metrics.json)
+Metrics source: [`reports/train_metrics.json`](reports/train_metrics.json)
 
 ## Current Business Outputs
 - Latest total revenue at risk: `$622,385.88`
@@ -81,6 +81,34 @@ Main browser pages:
 - `/monitoring` - drift and threshold alert review
 - `/customers` - analyst queue with filters by risk segment and contract
 - `/upload` - compatible dataset upload and scoring preview
+
+Detailed business summary: [`reports/REPORT.md`](reports/REPORT.md)
+
+## Screenshots
+### Executive Dashboard
+![Executive dashboard](assets/screenshots/dashboard.png)
+
+The home page gives a business-facing view of current revenue exposure, churn pressure, segment distribution, and the highest-priority risky customers in the latest batch run.
+
+### Monitoring Center
+![Monitoring center](assets/screenshots/monitoring.png)
+
+The monitoring page surfaces data drift, prediction drift, and threshold alerts in a format that is easy to review during model operations and risk checks.
+
+### Customer Explorer
+![Customer explorer](assets/screenshots/customers.png)
+
+The customer explorer helps analysts filter the latest customer population by risk segment and contract profile, then sort action priorities by projected revenue at risk.
+
+### Dataset Upload Preview
+![Dataset upload preview](assets/screenshots/upload.png)
+
+The upload page accepts compatible CSV, Parquet, and Excel files, validates the schema, and produces an in-memory scoring preview without overwriting the core production snapshot.
+
+### Realtime API Documentation
+![Realtime API documentation](assets/screenshots/docs.png)
+
+Swagger documentation exposes the realtime scoring contract and makes it easy to test the `POST /score` endpoint directly from the browser.
 
 ## API
 - `GET /health`
@@ -198,15 +226,15 @@ $env:PYTHONPATH='src'; .\.venv\Scripts\python -m churn_risk.monitoring.threshold
 10. Start the browser app and API
 
 ```powershell
-$env:PYTHONPATH='src'; .\.venv\Scripts\uvicorn churn_risk.api.app:app --reload
+$env:PYTHONPATH='src'; .\.venv\Scripts\uvicorn churn_risk.api.app:app --host 127.0.0.1 --port 8010 --reload
 ```
 
 Open:
-- `http://127.0.0.1:8000/`
-- `http://127.0.0.1:8000/monitoring`
-- `http://127.0.0.1:8000/customers`
-- `http://127.0.0.1:8000/upload`
-- `http://127.0.0.1:8000/docs`
+- `http://127.0.0.1:8010/`
+- `http://127.0.0.1:8010/monitoring`
+- `http://127.0.0.1:8010/customers`
+- `http://127.0.0.1:8010/upload`
+- `http://127.0.0.1:8010/docs`
 
 ## Dataset Upload Mode
 The browser app already supports a `compatible upload mode`:
@@ -257,3 +285,15 @@ Current test coverage:
 - Includes both API scoring and browser-based risk review
 - Adds temporal snapshots for monitoring and trend analytics
 - Supports compatible dataset upload instead of hard-locking the app to one demo flow
+
+## Repository Guide
+- `src/churn_risk/ingest` - raw data download, validation, parquet conversion, temporal snapshot generation
+- `src/churn_risk/features` - feature engineering pipeline
+- `src/churn_risk/train` - training, retraining, and artifacts
+- `src/churn_risk/batch` - batch scoring outputs
+- `src/churn_risk/api` - FastAPI routes for API and browser UI
+- `src/churn_risk/db` - PostgreSQL schema, loaders, and model registry
+- `src/churn_risk/monitoring` - drift and threshold monitoring jobs
+- `src/churn_risk/ui` - templates, dashboard services, and static assets
+- `assets/screenshots` - README screenshots
+- `reports` - training metrics and business-facing report

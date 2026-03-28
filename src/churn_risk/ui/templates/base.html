@@ -1,28 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no" class="notranslate">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Language" content="en">
+    <meta name="google" content="notranslate">
     <title>{{ page_title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', path='/css/app.css') }}">
 </head>
-<body>
+<body class="notranslate">
     <div class="app-shell">
-        <aside class="sidebar">
-            <div class="brand-block">
+        <header class="topbar">
+            <div class="topbar-brand">
                 <p class="eyebrow">Revenue Risk Platform</p>
                 <h1>Command Center</h1>
-                <p class="brand-copy">Production-style churn intelligence with risk analytics, API scoring, monitoring, and BI-ready datasets.</p>
+                <p class="brand-copy">Churn intelligence, revenue exposure analytics, monitoring, and browser-based decision support.</p>
             </div>
-            <nav class="nav-links">
-                <a href="/" class="nav-link active">Overview</a>
-                <a href="/customers" class="nav-link">Customers</a>
-                <a href="/monitoring" class="nav-link">Monitoring</a>
-                <a href="/upload" class="nav-link">Upload</a>
-                <a href="/docs" class="nav-link">API Docs</a>
-                <a href="/health" class="nav-link">Health Check</a>
-            </nav>
-        </aside>
+            <div class="topbar-actions">
+                <a href="/upload" class="action-button">Upload Dataset</a>
+                <a href="/docs" class="action-button action-button-secondary">API Docs</a>
+            </div>
+        </header>
+        <nav class="topnav">
+            <a href="/" class="nav-link {% if request.url.path == '/' %}active{% endif %}">Overview</a>
+            <a href="/customers" class="nav-link {% if request.url.path.startswith('/customers') %}active{% endif %}">Customers</a>
+            <a href="/monitoring" class="nav-link {% if request.url.path.startswith('/monitoring') %}active{% endif %}">Monitoring</a>
+            <a href="/upload" class="nav-link {% if request.url.path.startswith('/upload') %}active{% endif %}">Upload</a>
+            <a href="/docs" class="nav-link">API Docs</a>
+            <a href="/health" class="nav-link">Health</a>
+        </nav>
         <main class="main-panel">
             {% block content %}{% endblock %}
         </main>

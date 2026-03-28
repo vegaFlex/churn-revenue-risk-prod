@@ -19,8 +19,8 @@
     {% endfor %}
 </section>
 
-<section class="content-grid">
-    <article class="panel">
+<section class="monitoring-layout">
+    <article class="panel monitoring-alerts-panel">
         <div class="panel-header">
             <div>
                 <p class="eyebrow">Escalations</p>
@@ -73,12 +73,12 @@
                 <tbody>
                     {% for row in metric_rows %}
                     <tr>
-                        <td>{{ row.snapshot_date }}</td>
-                        <td>{{ row.metric_scope }}</td>
-                        <td>{{ row.metric_name }}</td>
-                        <td>{{ row.metric_value_display }}</td>
-                        <td>{{ row.threshold_value_display }}</td>
-                        <td>
+                        <td data-label="Snapshot">{{ row.snapshot_date }}</td>
+                        <td data-label="Scope">{{ row.metric_scope }}</td>
+                        <td data-label="Metric">{{ row.metric_name }}</td>
+                        <td data-label="Value">{{ row.metric_value_display }}</td>
+                        <td data-label="Threshold">{{ row.threshold_value_display }}</td>
+                        <td data-label="Status">
                             <span class="badge badge-{{ 'high' if row.status == 'alert' else 'low' }}">
                                 {{ row.status }}
                             </span>

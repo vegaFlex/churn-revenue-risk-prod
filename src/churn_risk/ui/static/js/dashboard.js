@@ -3,9 +3,19 @@ const canvas = document.getElementById("trendChart");
 if (canvas && Array.isArray(window.__TREND_POINTS__) && window.__TREND_POINTS__.length > 1) {
     const ctx = canvas.getContext("2d");
     const points = window.__TREND_POINTS__;
-    const width = canvas.width = canvas.parentElement.clientWidth;
-    const height = canvas.height = 250;
-    const padding = 26;
+    const isMobile = window.innerWidth <= 720;
+    const isTablet = window.innerWidth <= 1080;
+    const cssWidth = canvas.parentElement.clientWidth;
+    const cssHeight = isMobile ? 220 : (isTablet ? 250 : 280);
+    const pixelRatio = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(cssWidth * pixelRatio);
+    canvas.height = Math.floor(cssHeight * pixelRatio);
+    canvas.style.width = `${cssWidth}px`;
+    canvas.style.height = `${cssHeight}px`;
+    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    const width = cssWidth;
+    const height = cssHeight;
+    const padding = isMobile ? 18 : 26;
 
     const values = points.map((point) => point.total_revenue_at_risk);
     const minValue = Math.min(...values);
@@ -66,9 +76,12 @@ if (canvas && Array.isArray(window.__TREND_POINTS__) && window.__TREND_POINTS__.
     });
 
     ctx.fillStyle = "#6f7468";
-    ctx.font = "12px Georgia";
+    ctx.font = isMobile ? "10px 'Segoe UI'" : "12px 'Segoe UI'";
     points.forEach((point, index) => {
+        if ((isMobile && index % 3 !== 0) || (!isMobile && isTablet && index % 2 === 1)) {
+            return;
+        }
         const x = scaleX(index);
-        ctx.fillText(point.snapshot_date.slice(5), x - 16, height - 8);
+        ctx.fillText(point.snapshot_date.slice(5), x - (isMobile ? 12 : 16), height - 6);
     });
 }

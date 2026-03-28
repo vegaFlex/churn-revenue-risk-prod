@@ -64,14 +64,14 @@
             <tbody>
                 {% for row in customer_rows %}
                 <tr>
-                    <td>{{ row.customerID }}</td>
-                    <td>{{ row.Contract }}</td>
-                    <td>{{ row.PaymentMethod }}</td>
-                    <td>${{ "%.2f"|format(row.MonthlyCharges) }}</td>
-                    <td>{{ "%.1f%%"|format(row.churn_probability * 100) }}</td>
-                    <td>{{ "%.2f"|format(row.expected_months_remaining) }}</td>
-                    <td>${{ "%.2f"|format(row.revenue_at_risk) }}</td>
-                    <td><span class="badge badge-{{ row.risk_segment }}">{{ row.risk_segment }}</span></td>
+                    <td data-label="Customer">{{ row.customerID }}</td>
+                    <td data-label="Contract">{{ row.Contract }}</td>
+                    <td data-label="Payment">{{ row.PaymentMethod }}</td>
+                    <td data-label="Monthly">${{ "%.2f"|format(row.MonthlyCharges) }}</td>
+                    <td data-label="Churn">{{ "%.1f%%"|format(row.churn_probability * 100) }}</td>
+                    <td data-label="Months Left">{{ "%.2f"|format(row.expected_months_remaining) }}</td>
+                    <td data-label="Revenue at Risk">${{ "%.2f"|format(row.revenue_at_risk) }}</td>
+                    <td data-label="Segment"><span class="badge badge-{{ row.risk_segment }}">{{ row.risk_segment }}</span></td>
                 </tr>
                 {% endfor %}
             </tbody>

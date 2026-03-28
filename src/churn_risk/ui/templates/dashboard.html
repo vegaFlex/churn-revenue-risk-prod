@@ -21,7 +21,7 @@
 
 <section class="content-grid">
     <article class="panel panel-large">
-        <div class="panel-header">
+        <div class="panel-header panel-header-trend">
             <div>
                 <p class="eyebrow">Trend monitor</p>
                 <h3>Revenue risk and churn trajectory</h3>
@@ -58,7 +58,7 @@
             <div class="panel-caption">Highest revenue exposure in the latest batch run</div>
         </div>
         <div class="table-shell">
-            <table>
+            <table class="compact-risk-table">
                 <thead>
                     <tr>
                         <th>Customer</th>
@@ -72,12 +72,12 @@
                 <tbody>
                     {% for row in top_risky_customers %}
                     <tr>
-                        <td>{{ row.customerID }}</td>
-                        <td>{{ row.Contract }}</td>
-                        <td>${{ "%.2f"|format(row.MonthlyCharges) }}</td>
-                        <td>{{ "%.1f%%"|format(row.churn_probability * 100) }}</td>
-                        <td>${{ "%.2f"|format(row.revenue_at_risk) }}</td>
-                        <td><span class="badge badge-{{ row.risk_segment }}">{{ row.risk_segment }}</span></td>
+                        <td data-label="Customer">{{ row.customerID }}</td>
+                        <td data-label="Contract">{{ row.Contract }}</td>
+                        <td data-label="Monthly">${{ "%.2f"|format(row.MonthlyCharges) }}</td>
+                        <td data-label="Churn">{{ "%.1f%%"|format(row.churn_probability * 100) }}</td>
+                        <td data-label="Revenue at Risk">${{ "%.2f"|format(row.revenue_at_risk) }}</td>
+                        <td data-label="Segment"><span class="badge badge-{{ row.risk_segment }}">{{ row.risk_segment }}</span></td>
                     </tr>
                     {% endfor %}
                 </tbody>
