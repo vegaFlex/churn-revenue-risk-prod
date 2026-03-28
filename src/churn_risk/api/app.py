@@ -4,7 +4,7 @@ from functools import lru_cache
 
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, File, Request, UploadFile
+from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -21,7 +21,17 @@ from churn_risk.ui.customers_service import build_customers_context
 from churn_risk.ui.dashboard_service import build_dashboard_context
 from churn_risk.ui.docs_service import build_doc_page_context, build_docs_hub_context
 from churn_risk.ui.monitoring_service import build_monitoring_context
-from churn_risk.ui.upload_service import score_uploaded_dataset
+from churn_risk.upload_analysis import (
+    REQUIRED_UPLOAD_COLUMNS,
+    apply_column_mapping,
+    build_dataset_profile,
+    build_mapping_options,
+    get_staged_metadata,
+    load_staged_dataset,
+    read_uploaded_dataset,
+    save_uploaded_dataset,
+    score_uploaded_dataset,
+)
 
 
 app = FastAPI(
@@ -104,6 +114,11 @@ def upload_page(request: Request):
         "upload_summary": None,
         "preview_rows": [],
         "error_message": None,
+        "profile_summary": None,
+        "column_profiles": [],
+        "mapping_fields": [],
+        "staged_upload_token": None,
+        "uploaded_filename": None,
     }
     return templates.TemplateResponse(request, "upload.html", context)
 
@@ -136,6 +151,13 @@ def buyer_guide(request: Request):
     return templates.TemplateResponse(request, "documentation_page.html", context)
 
 
+@app.get("/docs/upload-schema-guide/", response_class=HTMLResponse)
+def upload_schema_guide(request: Request):
+    context = build_doc_page_context("upload-schema-guide")
+    context["request"] = request
+    return templates.TemplateResponse(request, "documentation_page.html", context)
+
+
 @app.post("/upload", response_class=HTMLResponse)
 async def upload_dataset(request: Request, dataset_file: UploadFile = File(...)):
     context = {
@@ -144,18 +166,118 @@ async def upload_dataset(request: Request, dataset_file: UploadFile = File(...))
         "upload_summary": None,
         "preview_rows": [],
         "error_message": None,
+        "profile_summary": None,
+        "column_profiles": [],
+        "mapping_fields": [],
+        "staged_upload_token": None,
+        "uploaded_filename": None,
     }
 
     try:
-        model, preprocessor = get_inference_assets()
         file_content = await dataset_file.read()
-        from churn_risk.ui.upload_service import read_uploaded_dataset
-
         uploaded_df = read_uploaded_dataset(dataset_file.filename or "uploaded.csv", file_content)
-        summary, preview_rows = score_uploaded_dataset(uploaded_df, model, preprocessor)
+        staged_token = save_uploaded_dataset(uploaded_df, dataset_file.filename or "uploaded.csv")
+        profile_summary = build_dataset_profile(uploaded_df)
+        mapping_fields = build_mapping_options(uploaded_df, profile_summary["mapping_suggestions"])
+        context["profile_summary"] = profile_summary
+        context["column_profiles"] = profile_summary["column_profiles"]
+        context["mapping_fields"] = mapping_fields
+        context["staged_upload_token"] = staged_token
+        context["uploaded_filename"] = dataset_file.filename or "uploaded.csv"
+    except Exception as exc:  # noqa: BLE001
+        context["error_message"] = str(exc)
+
+    return templates.TemplateResponse(request, "upload.html", context)
+
+
+@app.post("/upload/score-mapped", response_class=HTMLResponse)
+async def upload_score_mapped(
+    request: Request,
+    staged_upload_token: str = Form(...),
+    customerID: str = Form(""),
+    gender: str = Form(""),
+    SeniorCitizen: str = Form(""),
+    Partner: str = Form(""),
+    Dependents: str = Form(""),
+    tenure: str = Form(""),
+    PhoneService: str = Form(""),
+    MultipleLines: str = Form(""),
+    InternetService: str = Form(""),
+    OnlineSecurity: str = Form(""),
+    OnlineBackup: str = Form(""),
+    DeviceProtection: str = Form(""),
+    TechSupport: str = Form(""),
+    StreamingTV: str = Form(""),
+    StreamingMovies: str = Form(""),
+    Contract: str = Form(""),
+    PaperlessBilling: str = Form(""),
+    PaymentMethod: str = Form(""),
+    MonthlyCharges: str = Form(""),
+    TotalCharges: str = Form(""),
+):
+    mapping = {
+        field: value
+        for field, value in {
+            "customerID": customerID,
+            "gender": gender,
+            "SeniorCitizen": SeniorCitizen,
+            "Partner": Partner,
+            "Dependents": Dependents,
+            "tenure": tenure,
+            "PhoneService": PhoneService,
+            "MultipleLines": MultipleLines,
+            "InternetService": InternetService,
+            "OnlineSecurity": OnlineSecurity,
+            "OnlineBackup": OnlineBackup,
+            "DeviceProtection": DeviceProtection,
+            "TechSupport": TechSupport,
+            "StreamingTV": StreamingTV,
+            "StreamingMovies": StreamingMovies,
+            "Contract": Contract,
+            "PaperlessBilling": PaperlessBilling,
+            "PaymentMethod": PaymentMethod,
+            "MonthlyCharges": MonthlyCharges,
+            "TotalCharges": TotalCharges,
+        }.items()
+    }
+    context = {
+        "page_title": "Dataset Upload",
+        "request": request,
+        "upload_summary": None,
+        "preview_rows": [],
+        "error_message": None,
+        "profile_summary": None,
+        "column_profiles": [],
+        "mapping_fields": [],
+        "staged_upload_token": staged_upload_token,
+        "uploaded_filename": None,
+    }
+
+    try:
+        uploaded_df = load_staged_dataset(staged_upload_token)
+        metadata = get_staged_metadata(staged_upload_token)
+        mapped_df = apply_column_mapping(uploaded_df, mapping)
+        model, preprocessor = get_inference_assets()
+        summary, preview_rows = score_uploaded_dataset(mapped_df, model, preprocessor)
+
+        profile_summary = build_dataset_profile(uploaded_df)
+        context["profile_summary"] = profile_summary
+        context["column_profiles"] = profile_summary["column_profiles"]
+        context["mapping_fields"] = build_mapping_options(uploaded_df, mapping)
         context["upload_summary"] = summary
         context["preview_rows"] = preview_rows
+        context["uploaded_filename"] = metadata.get("original_filename")
     except Exception as exc:  # noqa: BLE001
+        try:
+            uploaded_df = load_staged_dataset(staged_upload_token)
+            profile_summary = build_dataset_profile(uploaded_df)
+            context["profile_summary"] = profile_summary
+            context["column_profiles"] = profile_summary["column_profiles"]
+            context["mapping_fields"] = build_mapping_options(uploaded_df, mapping)
+            metadata = get_staged_metadata(staged_upload_token)
+            context["uploaded_filename"] = metadata.get("original_filename")
+        except Exception:
+            pass
         context["error_message"] = str(exc)
 
     return templates.TemplateResponse(request, "upload.html", context)

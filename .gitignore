@@ -14,4 +14,6 @@ __pycache__/
 
 # Test and notebook artifacts
 .pytest_cache/
+.ruff_cache/
+data/processed/upload_staging/
 .ipynb_checkpoints/

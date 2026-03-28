@@ -31,12 +31,21 @@ DOCS_REGISTRY = {
         ),
         "path": DOCS_DIR / "buyer_guide.md",
     },
+    "upload-schema-guide": {
+        "title": "Revenue Risk and Customer Churn Intelligence Platform - Upload Schema Guide",
+        "subtitle": (
+            "Validation rules, required fields, mapping behaviour, and practical guidance for "
+            "uploading datasets into the churn scoring workflow."
+        ),
+        "path": DOCS_DIR / "upload_schema_guide.md",
+    },
 }
 
 DOCS_NAV = [
     {"label": "User Guide", "href": "/docs/user-guide/"},
     {"label": "Manual Testing Guide", "href": "/docs/manual-testing-guide/"},
     {"label": "Buyer Guide", "href": "/docs/buyer-guide/"},
+    {"label": "Upload Schema Guide", "href": "/docs/upload-schema-guide/"},
     {"label": "API Docs", "href": "/docs"},
     {"label": "Open App", "href": "/"},
 ]

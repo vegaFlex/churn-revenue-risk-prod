@@ -3,19 +3,19 @@
 {% block content %}
 <section class="hero">
     <div>
-        <p class="eyebrow">Compatible upload mode</p>
+        <p class="eyebrow">Schema mapping upload mode</p>
         <h2>Dataset intake</h2>
     </div>
-    <div class="hero-pill">Upload CSV, Parquet, or Excel to generate churn and revenue risk scores</div>
+    <div class="hero-pill">Upload any table-like dataset, profile the columns, map the schema, and generate churn and revenue-risk scores</div>
 </section>
 
 <section class="panel upload-panel">
     <div class="panel-header">
         <div>
             <p class="eyebrow">Upload dataset</p>
-            <h3>Score a compatible customer file</h3>
+            <h3>Profile a customer file before scoring</h3>
         </div>
-        <div class="panel-caption">Required schema must match the telco-compatible scoring profile</div>
+        <div class="panel-caption">Use profiling and schema mapping to align uploaded columns with the churn scoring engine</div>
     </div>
 
     <form method="post" action="/upload" enctype="multipart/form-data" class="upload-form">
@@ -34,18 +34,126 @@
                 <span id="selected-file-name" class="upload-picker-name">No file selected</span>
             </div>
         </label>
-        <button type="submit" class="primary-button">Run scoring preview</button>
+        <button type="submit" class="primary-button">Profile dataset</button>
     </form>
 
     <div class="upload-copy">
         <p>Supported formats: <strong>CSV</strong>, <strong>Parquet</strong>, <strong>Excel (.xlsx)</strong></p>
-        <p>Minimum required columns: customer profile fields from the telco-compatible schema. Churn target is not required for scoring preview.</p>
+        <p>The app now supports schema mapping. Upload a table, review the profile, map the columns to the required churn fields, and then run the scoring preview.</p>
+        <p><a href="/docs/upload-schema-guide/" class="inline-doc-link">Open the Upload Schema Guide</a> for validation rules, required fields, and mapping examples.</p>
     </div>
 
     {% if error_message %}
     <div class="error-banner">{{ error_message }}</div>
     {% endif %}
 </section>
+
+{% if profile_summary %}
+<section class="kpi-grid">
+    <article class="kpi-card">
+        <p class="kpi-label">Rows</p>
+        <p class="kpi-value">{{ profile_summary.rows }}</p>
+        <p class="kpi-hint">Rows detected in the uploaded dataset</p>
+    </article>
+    <article class="kpi-card">
+        <p class="kpi-label">Columns</p>
+        <p class="kpi-value">{{ profile_summary.columns }}</p>
+        <p class="kpi-hint">Total columns available for profiling and mapping</p>
+    </article>
+    <article class="kpi-card">
+        <p class="kpi-label">Suggested Matches</p>
+        <p class="kpi-value">{{ profile_summary.mapped_fields }}/{{ profile_summary.required_fields }}</p>
+        <p class="kpi-hint">Fields that the app could auto-suggest from the uploaded schema</p>
+    </article>
+    <article class="kpi-card">
+        <p class="kpi-label">Missing Cells</p>
+        <p class="kpi-value">{{ profile_summary.missing_total }}</p>
+        <p class="kpi-hint">Total missing values across the uploaded dataset</p>
+    </article>
+</section>
+
+<section class="content-grid upload-analysis-grid">
+    <article class="panel">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Dataset profile</p>
+                <h3>Uploaded file summary</h3>
+            </div>
+            {% if uploaded_filename %}
+            <div class="panel-caption">{{ uploaded_filename }}</div>
+            {% endif %}
+        </div>
+        <div class="upload-profile-list">
+            <div class="upload-profile-item"><span>Numeric columns</span><strong>{{ profile_summary.numeric_columns }}</strong></div>
+            <div class="upload-profile-item"><span>Duplicate rows</span><strong>{{ profile_summary.duplicate_rows }}</strong></div>
+            <div class="upload-profile-item"><span>Suggested field matches</span><strong>{{ profile_summary.mapped_fields }}</strong></div>
+            <div class="upload-profile-item"><span>Required scoring fields</span><strong>{{ profile_summary.required_fields }}</strong></div>
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Schema mapping</p>
+                <h3>Map uploaded columns to churn fields</h3>
+            </div>
+            <div class="panel-caption">Required before scoring</div>
+        </div>
+        <form method="post" action="/upload/score-mapped" class="mapping-form">
+            <input type="hidden" name="staged_upload_token" value="{{ staged_upload_token }}">
+            <div class="mapping-grid">
+                {% for field in mapping_fields %}
+                <label class="mapping-field">
+                    <span>{{ field.required_field }}</span>
+                    <select name="{{ field.required_field }}">
+                        {% for option in field.options %}
+                        <option value="{{ option.value }}" {% if option.value == field.selected_value %}selected{% endif %}>
+                            {{ option.label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </label>
+                {% endfor %}
+            </div>
+            <button type="submit" class="primary-button">Run mapped scoring preview</button>
+        </form>
+    </article>
+</section>
+
+<section class="panel panel-table">
+    <div class="panel-header">
+        <div>
+            <p class="eyebrow">Column profiling</p>
+            <h3>Uploaded dataset column analysis</h3>
+        </div>
+        <div class="panel-caption">Shows data type, missingness, uniqueness, and sample values</div>
+    </div>
+    <div class="table-shell">
+        <table>
+            <thead>
+                <tr>
+                    <th>Column</th>
+                    <th>Type</th>
+                    <th>Missing %</th>
+                    <th>Unique Values</th>
+                    <th>Sample Values</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in column_profiles %}
+                <tr>
+                    <td data-label="Column">{{ row.name }}</td>
+                    <td data-label="Type">{{ row.dtype }}</td>
+                    <td data-label="Missing %">{{ row.missing_pct }}</td>
+                    <td data-label="Unique Values">{{ row.unique_values }}</td>
+                    <td data-label="Sample Values">{{ row.sample_values | join(", ") }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endif %}
 
 {% if upload_summary %}
 <section class="kpi-grid">

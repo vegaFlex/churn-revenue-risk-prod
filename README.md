@@ -82,6 +82,7 @@ Main browser pages:
 - `/customers` - analyst queue with filters by risk segment and contract
 - `/upload` - compatible dataset upload and scoring preview
 - `/docs/guide/` - browser-friendly documentation hub with user, testing, and buyer guides
+- `/docs/upload-schema-guide/` - upload validation and schema mapping guidance
 
 Detailed business summary: [`reports/REPORT.md`](reports/REPORT.md)
 
@@ -241,6 +242,7 @@ Open:
 - `http://127.0.0.1:8010/customers`
 - `http://127.0.0.1:8010/upload`
 - `http://127.0.0.1:8010/docs/guide/`
+- `http://127.0.0.1:8010/docs/upload-schema-guide/`
 - `http://127.0.0.1:8010/docs`
 
 ## Dataset Upload Mode
@@ -292,6 +294,11 @@ Current test coverage:
 - Includes both API scoring and browser-based risk review
 - Adds temporal snapshots for monitoring and trend analytics
 - Supports compatible dataset upload instead of hard-locking the app to one demo flow
+
+## Portfolio Packaging
+- Business report: [`reports/REPORT.md`](reports/REPORT.md)
+- Browser docs hub: `/docs/guide/`
+- README screenshots: `assets/screenshots/`
 
 ## Repository Guide
 - `src/churn_risk/ingest` - raw data download, validation, parquet conversion, temporal snapshot generation
