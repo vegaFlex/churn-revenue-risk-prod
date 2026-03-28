@@ -81,6 +81,7 @@ Main browser pages:
 - `/monitoring` - drift and threshold alert review
 - `/customers` - analyst queue with filters by risk segment and contract
 - `/upload` - compatible dataset upload and scoring preview
+- `/docs/guide/` - browser-friendly documentation hub with user, testing, and buyer guides
 
 Detailed business summary: [`reports/REPORT.md`](reports/REPORT.md)
 
@@ -109,6 +110,11 @@ The upload page accepts compatible CSV, Parquet, and Excel files, validates the 
 ![Realtime API documentation](assets/screenshots/docs.png)
 
 Swagger documentation exposes the realtime scoring contract and makes it easy to test the `POST /score` endpoint directly from the browser.
+
+### Browser Documentation Hub
+![Browser documentation hub](assets/screenshots/user-guide.png)
+
+The app also includes browser-based product documentation with a user guide, manual testing guide, and buyer guide so non-technical reviewers can understand workflows, screens, and core capabilities without reading the codebase.
 
 ## API
 - `GET /health`
@@ -234,6 +240,7 @@ Open:
 - `http://127.0.0.1:8010/monitoring`
 - `http://127.0.0.1:8010/customers`
 - `http://127.0.0.1:8010/upload`
+- `http://127.0.0.1:8010/docs/guide/`
 - `http://127.0.0.1:8010/docs`
 
 ## Dataset Upload Mode

@@ -518,6 +518,93 @@ td {
     border: 1px solid rgba(172, 67, 53, 0.2);
 }
 
+.docs-hero,
+.docs-body {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    padding: 24px;
+}
+
+.docs-hero {
+    margin-bottom: 18px;
+}
+
+.docs-subtitle {
+    margin: 10px 0 0;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 900px;
+}
+
+.docs-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.docs-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(13, 107, 95, 0.08);
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 700;
+    border: 1px solid rgba(13, 107, 95, 0.14);
+}
+
+.prose-shell h2,
+.prose-shell h3,
+.prose-shell h4 {
+    margin-top: 0;
+    color: var(--ink);
+}
+
+.prose-shell h2 {
+    font-size: 2rem;
+    margin-bottom: 12px;
+}
+
+.prose-shell h3 {
+    font-size: 1.5rem;
+    margin-top: 26px;
+    margin-bottom: 10px;
+}
+
+.prose-shell h4 {
+    font-size: 1.05rem;
+    margin-top: 22px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+}
+
+.prose-shell p,
+.prose-shell li {
+    line-height: 1.7;
+    color: var(--ink);
+}
+
+.prose-shell ul,
+.prose-shell ol {
+    margin: 10px 0 12px 22px;
+    padding: 0;
+}
+
+.prose-shell code {
+    background: rgba(31, 42, 42, 0.05);
+    border: 1px solid rgba(31, 42, 42, 0.08);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-family: Consolas, monospace;
+}
+
 @media (max-width: 1080px) {
     .app-shell {
         width: min(100% - 20px, 1440px);
@@ -609,6 +696,31 @@ td {
 
     .upload-picker-button {
         width: 100%;
+    }
+
+    .docs-hero,
+    .docs-body {
+        padding: 18px;
+        border-radius: 18px;
+    }
+
+    .docs-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .docs-pill {
+        width: 100%;
+        text-align: center;
+    }
+
+    .prose-shell h2 {
+        font-size: 1.55rem;
+    }
+
+    .prose-shell h3 {
+        font-size: 1.2rem;
     }
 
     .topbar-brand h1 {

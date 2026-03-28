@@ -26,6 +26,7 @@
             <a href="/customers" class="nav-link {% if request.url.path.startswith('/customers') %}active{% endif %}">Customers</a>
             <a href="/monitoring" class="nav-link {% if request.url.path.startswith('/monitoring') %}active{% endif %}">Monitoring</a>
             <a href="/upload" class="nav-link {% if request.url.path.startswith('/upload') %}active{% endif %}">Upload</a>
+            <a href="/docs/guide/" class="nav-link {% if request.url.path.startswith('/docs/guide') or request.url.path.startswith('/docs/user-guide') or request.url.path.startswith('/docs/manual-testing-guide') or request.url.path.startswith('/docs/buyer-guide') %}active{% endif %}">Guides</a>
             <a href="/docs" class="nav-link">API Docs</a>
             <a href="/health" class="nav-link">Health</a>
         </nav>

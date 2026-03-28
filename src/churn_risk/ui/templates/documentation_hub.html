@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="docs-hero">
+    <p class="eyebrow">Documentation</p>
+    <h2>{{ docs_title }}</h2>
+    <p class="docs-subtitle">{{ docs_subtitle }}</p>
+    <div class="docs-actions">
+        {% for item in docs_nav %}
+        <a href="{{ item.href }}" class="docs-pill">{{ item.label }}</a>
+        {% endfor %}
+        <a href="javascript:window.print()" class="docs-pill">Print / Save PDF</a>
+    </div>
+</section>
+{% endblock %}

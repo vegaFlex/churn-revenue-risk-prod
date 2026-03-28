@@ -19,6 +19,7 @@ from churn_risk.scoring import (
 )
 from churn_risk.ui.customers_service import build_customers_context
 from churn_risk.ui.dashboard_service import build_dashboard_context
+from churn_risk.ui.docs_service import build_doc_page_context, build_docs_hub_context
 from churn_risk.ui.monitoring_service import build_monitoring_context
 from churn_risk.ui.upload_service import score_uploaded_dataset
 
@@ -105,6 +106,34 @@ def upload_page(request: Request):
         "error_message": None,
     }
     return templates.TemplateResponse(request, "upload.html", context)
+
+
+@app.get("/docs/guide/", response_class=HTMLResponse)
+def documentation_hub(request: Request):
+    context = build_docs_hub_context()
+    context["request"] = request
+    return templates.TemplateResponse(request, "documentation_hub.html", context)
+
+
+@app.get("/docs/user-guide/", response_class=HTMLResponse)
+def user_guide(request: Request):
+    context = build_doc_page_context("user-guide")
+    context["request"] = request
+    return templates.TemplateResponse(request, "documentation_page.html", context)
+
+
+@app.get("/docs/manual-testing-guide/", response_class=HTMLResponse)
+def manual_testing_guide(request: Request):
+    context = build_doc_page_context("manual-testing-guide")
+    context["request"] = request
+    return templates.TemplateResponse(request, "documentation_page.html", context)
+
+
+@app.get("/docs/buyer-guide/", response_class=HTMLResponse)
+def buyer_guide(request: Request):
+    context = build_doc_page_context("buyer-guide")
+    context["request"] = request
+    return templates.TemplateResponse(request, "documentation_page.html", context)
 
 
 @app.post("/upload", response_class=HTMLResponse)
