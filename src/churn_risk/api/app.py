@@ -18,6 +18,7 @@ from churn_risk.scoring import (
     load_inference_artifacts,
     predict_churn_probabilities,
 )
+from churn_risk.ui.customers_service import build_customers_context
 from churn_risk.ui.dashboard_service import build_dashboard_context
 from churn_risk.ui.monitoring_service import build_monitoring_context
 
@@ -81,6 +82,17 @@ def monitoring_page(request: Request):
     context = build_monitoring_context()
     context["request"] = request
     return templates.TemplateResponse(request, "monitoring.html", context)
+
+
+@app.get("/customers", response_class=HTMLResponse)
+def customers_page(
+    request: Request,
+    risk_segment: str | None = None,
+    contract: str | None = None,
+):
+    context = build_customers_context(risk_segment=risk_segment, contract=contract)
+    context["request"] = request
+    return templates.TemplateResponse(request, "customers.html", context)
 
 
 @app.post("/score", response_model=ScoreResponse)

@@ -308,6 +308,50 @@ th {
     color: var(--safe);
 }
 
+.filter-bar {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.filter-label {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+}
+
+.filter-pills {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255, 251, 245, 0.9);
+    color: var(--ink);
+    text-decoration: none;
+    transition: transform 0.16s ease, background 0.16s ease;
+}
+
+.filter-pill:hover,
+.filter-pill.active {
+    background: rgba(13, 107, 95, 0.12);
+    color: var(--accent);
+    transform: translateY(-1px);
+}
+
 @media (max-width: 1080px) {
     .app-shell {
         grid-template-columns: 1fr;

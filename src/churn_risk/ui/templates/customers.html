@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Customer explorer snapshot</p>
+        <h2>{{ latest_snapshot_date }}</h2>
+    </div>
+    <div class="hero-pill">Prioritise outreach by risk, contract, and revenue exposure</div>
+</section>
+
+<section class="filter-bar">
+    <div class="filter-group">
+        <span class="filter-label">Risk Segment</span>
+        <div class="filter-pills">
+            <a href="/customers" class="filter-pill {% if not selected_risk_segment %}active{% endif %}">All</a>
+            {% for segment in available_segments %}
+            <a href="/customers?risk_segment={{ segment }}{% if selected_contract %}&contract={{ selected_contract }}{% endif %}"
+               class="filter-pill {% if selected_risk_segment == segment %}active{% endif %}">
+               {{ segment }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="filter-group">
+        <span class="filter-label">Contract</span>
+        <div class="filter-pills">
+            <a href="/customers{% if selected_risk_segment %}?risk_segment={{ selected_risk_segment }}{% endif %}"
+               class="filter-pill {% if not selected_contract %}active{% endif %}">
+               All
+            </a>
+            {% for contract in available_contracts %}
+            <a href="/customers?contract={{ contract }}{% if selected_risk_segment %}&risk_segment={{ selected_risk_segment }}{% endif %}"
+               class="filter-pill {% if selected_contract == contract %}active{% endif %}">
+               {{ contract }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="panel panel-table">
+    <div class="panel-header">
+        <div>
+            <p class="eyebrow">Analyst queue</p>
+            <h3>{{ customer_count }} customers in scope</h3>
+        </div>
+        <div class="panel-caption">Sorted by revenue-at-risk and churn probability</div>
+    </div>
+    <div class="table-shell">
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Contract</th>
+                    <th>Payment</th>
+                    <th>Monthly</th>
+                    <th>Churn</th>
+                    <th>Months Left</th>
+                    <th>Revenue at Risk</th>
+                    <th>Segment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in customer_rows %}
+                <tr>
+                    <td>{{ row.customerID }}</td>
+                    <td>{{ row.Contract }}</td>
+                    <td>{{ row.PaymentMethod }}</td>
+                    <td>${{ "%.2f"|format(row.MonthlyCharges) }}</td>
+                    <td>{{ "%.1f%%"|format(row.churn_probability * 100) }}</td>
+                    <td>{{ "%.2f"|format(row.expected_months_remaining) }}</td>
+                    <td>${{ "%.2f"|format(row.revenue_at_risk) }}</td>
+                    <td><span class="badge badge-{{ row.risk_segment }}">{{ row.risk_segment }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
